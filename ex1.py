@@ -5,3 +5,5 @@ print(1+0)
 print('Hi zzzzzzzzz')
 print('sujinnnn')
 print("신소범")
+for i in range(1,2):
+    print(i)
