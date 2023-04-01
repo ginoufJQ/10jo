@@ -80,3 +80,115 @@ for n in list_RSI :
 
 
         
+
+
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+sum = 0
+FP = 0
+FRK = 0
+
+
+#용량 입력
+Z = [1000,500,1000,500,1000,1500]
+del sum
+FTL = [sum(Z),8500,9500]
+FM = 14000
+
+for i in range(1,7): 
+    globals()["Z{}".format(i)]=Z[i-1]
+   
+for i in range(1,4):
+    globals()["FM{}".format(i)]=FM
+
+for i in range(1,4):
+    globals()["FTL{}".format(i)]=FTL[i-1]
+
+for i in range(1,4):
+    globals()["F{}".format(i)]=FM-FTL[i-1]
+#
+
+
+
+#직선경로
+L = ["L1","L2","L3"]
+L1 = ["F1","Z1","Z2","Z3","Z4","F3"] ##가로
+L2 = ["F2","Z6","Z5","Z3"]     ##세로
+L3 = ["F3", "Z4","Z3","Z2","Z1","F1"]
+
+#Main피더
+MP = "F1"
+#연계피더
+SP = ["F2","F3"]
+
+#분기점
+FRK = "Z3"
+
+#고장점
+FP = "Z1"
+
+
+
+
+
+############# F3의 경우에...
+L3 = ["F3", "Z4","Z3","Z2","Z1","F1"]
+
+
+if (FP in L3 )== True :                             ##L3에 분기점이 있으면..
+    number = L3.index(FP) - L3.index("F3")          ## 피더이랑 고장점 위치 차이
+    sum = F3                                         ## F3용량에서
+    for l in range(1,number):      
+        sum = sum - globals()[L3[l]]                 ## F3후부터 고장점 앞까지의 부하량을 차례로 빼준다....
+        globals()["ZRI_F3_{}".format(L3[l])]=sum      ## 부하량 하나 빼고 값 입력하고, 하나 빼고 값 입력하고..
+
+
+else :                                                ##L3에 분기점이 없으면..
+    number = L3.index(FP) - L3.index("F3")          ## 피더이랑 고장점 위치 차이
+    sum = F3                                         ## F3용량에서
+    for l in range(1,number):      
+        sum = sum - globals()[L3[l]]                 ## F3후부터 고장점 앞까지의 부하량을 차례로 빼준다....
+        globals()["ZRI_F3_{}".format(L3[l])]=sum      ## 부하량 하나 빼고 값 입력하고, 하나 빼고 값 입력하고..
+
+
+
+    if L3.index(FRK) <  L3.index(FP) :                                  ##고장점이 분기점 오른쪽에 있으면..
+        number = L3.index(FP) - L3.index(FRK)                            ## 분기점이랑 고장점 위치 차이
+        sum =  ZRI_F3_Z3                                                 ##분기점에서의 구간복구지수를 가져와서.. 
+          for l in range(1,number):
+                sum = sum - globals()[L3[L3.index(FRK)+l]]                ##분기점 이후분터 고장점 앞까지 부하량을 차례로 빼준다....
+                globals()["ZRI_F3_{}".format(L3[L3.index(FRK)+l])]=sum       ## 부하량 하나 빼고 값 입력하고, 하나 빼고 값 입력하고..
+
+
+    if L3.index(FRK) >  L3.index(FP) :                               ##고장점이 분기점 왼쪽에 있으면..
+        number = L3.index(FRK) -  L3.index(FP)                        ## 분기점이랑 고장점 위치 차이
+        sum =  ZRI_F3_Z3                                             ##분기점에서의 구간복구지수를 가져와서.. 
+        for l in range(1,number):
+                sum = sum - globals()[L3[L3.index(FRK)-l]]               ##분기점 이후분터 고장점 앞까지 부하량을 차례로 빼준다....
+                globals()["ZRI_F3_{}".format(L3[L3.index(FRK)-l])]=sum      ## 부하량 하나 빼고 값 입력하고, 하나 빼고 값 입력하고..
+
+
+ZRI_F3_Z4
+ZRI_F3_Z3
+ZRI_F3_Z2
+
+
+
+
+
+
+
+
+
+
+
+
+
+Calculate_ZRI(node)
+    if node is leaf
+        node.ZRI = connected_BF_margin-node.load
+    else   
+        FOR all child_node
+            Calculate_ZRI(child_node)
+        end for
+    node.ZRI = max(child_node.ZRI)-node.load
+    end if
