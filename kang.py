@@ -1,7 +1,7 @@
 sum = 0
 FP = 0
 FRK = 0
-
+remove_set = {0}
 
 #용량 입력
 Z = [1000,500,1000,500,1000,1500]
@@ -42,7 +42,6 @@ FRK = list(set(L1).intersection(L2))[0]
 for i in range(1,7):#6개 지점
 
     FP = "Z{}".format(i)#특정 고장점
-
     
 
     ZRI_F3_Z6 = 0
@@ -106,16 +105,17 @@ for i in range(1,7):#6개 지점
     ZRI_F3_Z3 ##3000
     ZRI_F3_Z2 ##2500 잘나온다!!!
     ZRI_F3_Z1 
-
-
+    
+    ZRI_F3 = [ZRI_F3_Z1,ZRI_F3_Z2,ZRI_F3_Z3,ZRI_F3_Z4,ZRI_F3_Z5,ZRI_F3_Z6]
+    ZRI_F3_R = [n for n in ZRI_F3 if n not in remove_set]  # ZRI_F3에서 0뺀 리스트
 
 
     ##################################################### F2의 경우########################
     ZRI_F2_Z6 = 0
-    ZRI_F2_Z5 = 0 
-    ZRI_F2_Z4 = 0 
-    ZRI_F2_Z3 = 0 
-    ZRI_F2_Z2 = 0 
+    ZRI_F2_Z5 = 0
+    ZRI_F2_Z4 = 0
+    ZRI_F2_Z3 = 0
+    ZRI_F2_Z2 = 0
     ZRI_F2_Z1 = 0
 
     L2 = ["F2","Z6","Z5","Z3"]     
@@ -170,9 +170,28 @@ for i in range(1,7):#6개 지점
     ZRI_F2_Z2 ##1500
     ZRI_F2_Z1 
 
-    ZRI_F3 = [ZRI_F3_Z1,ZRI_F3_Z2,ZRI_F3_Z3,ZRI_F3_Z4,ZRI_F3_Z5,ZRI_F3_Z6]
-    ZRI_F2 = [ZRI_F2_Z1,ZRI_F2_Z2,ZRI_F2_Z3,ZRI_F2_Z4,ZRI_F2_Z5,ZRI_F2_Z6]
 
+    ZRI_F2 = [ZRI_F2_Z1,ZRI_F2_Z2,ZRI_F2_Z3,ZRI_F2_Z4,ZRI_F2_Z5,ZRI_F2_Z6]
+    ZRI_F2_R = [m for m in ZRI_F2 if m not in remove_set]  # ZRI_F2에서 0뺀 리스트
+    
+    # 0을 뺀 리스트에서 제일 작은 값이 고장점 직전까지 계산값
+    # ZRI_F2_R와 ZRI_F3_R MIN 값 비교해서 큰 값이 있는쪽이 ZRI
+
+
+    if ZRI_F2_R == []:  
+        ZRI = ZRI_F3
+    elif ZRI_F3_R == []:
+        ZRI = ZRI_F2
+    else: 
+        if min(ZRI_F3_R) > min(ZRI_F2_R):
+            ZRI = ZRI_F3 
+        else:
+            ZRI = ZRI_F2
+    
+    print("ZRI_F3 = ", ZRI_F3)
+    print("ZRI_F2 = ", ZRI_F2)
+    print("ZRI = ", ZRI)
+    
  
         
    
