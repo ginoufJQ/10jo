@@ -35,28 +35,29 @@ MP = "F1"
 #연계피더
 SP = ["F2","F3"]
 
-#분기점
-FRK = "Z3"
+#분기점 (L1과 L2에서 중복된 값 찾기,,)
+FRK = list(set(L1).intersection(L2))[0]
 
 #고장점
 for i in range(1,7):#6개 지점
 
     FP = "Z{}".format(i)#특정 고장점
 
-    # ??????? 반복문으로 연계피더(F2, F3) 사용하는 경우를 합쳐서 표현할 수 있을까???????
     
-    ZRI_F3_Z6 = "-"
-    ZRI_F3_Z5 = "-"
-    ZRI_F3_Z4 = "-"
-    ZRI_F3_Z3 = "-"
-    ZRI_F3_Z2 = "-"
-    ZRI_F3_Z1 = "-"
+
+    ZRI_F3_Z6 = 0
+    ZRI_F3_Z5 = 0
+    ZRI_F3_Z4 = 0
+    ZRI_F3_Z3 = 0
+    ZRI_F3_Z2 = 0
+    ZRI_F3_Z1 = 0
     
 
     L3 = ["F3", "Z4","Z3","Z2","Z1","F1"]
 
+    
         #피더부터 고장점 앞까지 계산.
-    if (FP in L3 )== True :                       ##L3에 고장점이 있으면(고장점이 분기점인 경우도 여기에 포함됨.)
+    if (FP in L3) == True :                       ##L3에 고장점이 있으면(고장점이 분기점인 경우도 여기에 포함됨.)
         number = L3.index(FP) - L3.index("F3")     ## 피더랑 고장점 위치 차이만큼
         sum = globals()['F3']                                   ## F3용량에서
         for l in range(1,number):      
@@ -97,6 +98,8 @@ for i in range(1,7):#6개 지점
                         sum = sum - globals()[L2[L2.index(FRK)-l]]               ##분기점 이후분터 고장점 앞까지 부하량을 차례로 빼준다.(분기점 왼쪽 방향으로 부하 빼므로 -l)
                         globals()["ZRI_F3_{}".format(L2[L2.index(FRK)-l])]=sum      ## 값 입력
 
+    
+
     ZRI_F3_Z6 ##1500
     ZRI_F3_Z5 ##2000
     ZRI_F3_Z4 ##4000
@@ -108,12 +111,12 @@ for i in range(1,7):#6개 지점
 
 
     ##################################################### F2의 경우########################
-    ZRI_F2_Z6 = "-" 
-    ZRI_F2_Z5 = "-" 
-    ZRI_F2_Z4 = "-" 
-    ZRI_F2_Z3 = "-" 
-    ZRI_F2_Z2 = "-" 
-    ZRI_F2_Z1 = "-"
+    ZRI_F2_Z6 = 0
+    ZRI_F2_Z5 = 0 
+    ZRI_F2_Z4 = 0 
+    ZRI_F2_Z3 = 0 
+    ZRI_F2_Z2 = 0 
+    ZRI_F2_Z1 = 0
 
     L2 = ["F2","Z6","Z5","Z3"]     
 
@@ -158,6 +161,7 @@ for i in range(1,7):#6개 지점
                 for l in range(1,number):
                         sum = sum - globals()[L1[L1.index(FRK)-l]]               ##분기점 이후분터 고장점 앞까지 부하량을 차례로 빼준다.(분기점 왼쪽 방향으로 부하 빼므로 -l)
                         globals()["ZRI_F2_{}".format(L1[L1.index(FRK)-l])]=sum      ## 값 입력
+    
 
     ZRI_F2_Z6 ##4000
     ZRI_F2_Z5 ##3000
@@ -166,16 +170,11 @@ for i in range(1,7):#6개 지점
     ZRI_F2_Z2 ##1500
     ZRI_F2_Z1 
 
-    # ZRI 찾기
+    ZRI_F3 = [ZRI_F3_Z1,ZRI_F3_Z2,ZRI_F3_Z3,ZRI_F3_Z4,ZRI_F3_Z5,ZRI_F3_Z6]
+    ZRI_F2 = [ZRI_F2_Z1,ZRI_F2_Z2,ZRI_F2_Z3,ZRI_F2_Z4,ZRI_F2_Z5,ZRI_F2_Z6]
 
-    ZRI_F3 = "ZRI_F3_Z{}".format(i)
-    ZRI_F2 = "ZRI_F2_Z{}".format(i)
-
-    if ZRI_F3 > ZRI_F2:
-        ZRI = ZRI_F3
-    else:
-        ZRI = ZRI_F2
-    
+ 
+        
    
 
 
