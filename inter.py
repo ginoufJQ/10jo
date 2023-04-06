@@ -30,11 +30,16 @@ name_entered.grid(column=1, row=1)
 action = ttk.Button(frame, text="확인", command=click_me)
 action.grid(column=2, row=1)
 
-###### 2번째 Frame ######
-frame2 = tk.LabelFrame(win, text="계통도", padx=15, pady=15) # padx / pady 내부여백
-frame2.pack(fill="both", expand=True, padx=10, pady=10) # padx / pady 외부여백
-ttk.Label(frame2, text="요기에 주혁이형 알고리즘!").place(x=0, y=300)
+frame2 = tk.LabelFrame(win, text="계통도", padx=10, pady=10) 
+frame2.pack(fill="both", expand=True, padx=10, pady=10) 
+ttk.Label(frame2, text="다음칸에 주혁이형 알고리즘!").place(x=0, y=100)
 
+# grid 자동 생성
+for r in range(3):
+   for c in range(4):
+      Tkinter.Label(root, text='R%s/C%s'%(r,c),
+         borderwidth=1 ).grid(row=r,column=c
+                              
 b1=tk.Button(frame2)
 b2=tk.Button(frame2)
 b3=tk.Button(frame2)
