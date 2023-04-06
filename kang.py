@@ -179,18 +179,21 @@ for i in range(1,7):#6개 지점
 
 
     if ZRI_F2_R == []:  
-        ZRI = ZRI_F3
+        ZRI = globals()['F2'] 
     elif ZRI_F3_R == []:
-        ZRI = ZRI_F2
+        ZRI = globals()['F3'] 
     else: 
         if min(ZRI_F3_R) > min(ZRI_F2_R):
-            ZRI = ZRI_F3 
+            ZRI = min(ZRI_F3_R)
         else:
-            ZRI = ZRI_F2
+            ZRI = min(ZRI_F2_R)
     
-    print("ZRI_F3 = ", ZRI_F3)
-    print("ZRI_F2 = ", ZRI_F2)
-    print("ZRI = ", ZRI)
+    if ZRI >= 0:
+        print ("ZRI",i, " = ", ZRI, "복구 가능합니다.") 
+
+    else:
+        print ("ZRI",i, " = ", ZRI, "복구 불가능합니다.") 
+
     
  
         
