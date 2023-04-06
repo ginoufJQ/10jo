@@ -66,7 +66,7 @@ for i in range(1,7):#6개 지점
         #피더부터 분기점까지 계산.
     else :                                          ##L3에 고장점이 없으면
         number = L3.index(FRK) - L3.index("F3")    ## 피더랑 분기점 위치 차이만큼
-        sum = sum = globals()['F3']                          ## F3용량에서
+        sum = globals()['F3']                          ## F3용량에서
         for l in range(1,number+1):      
             sum = sum - globals()[L3[l]]            ## F3부터 분기점까지(분기점 포함이므로 number+1)의 부하량을 차례로 빼준다.
             globals()["ZRI_F3_{}".format(L3[l])]=sum  ## 값 입력
@@ -123,7 +123,7 @@ for i in range(1,7):#6개 지점
         #피더부터 고장점 앞까지 계산.
     if (FP in L2 )== True :                       ##L2에 고장점이 있으면(고장점이 분기점인 경우도 여기에 포함됨.)
         number = L2.index(FP) - L2.index("F2")     ## 피더랑 고장점 위치 차이만큼
-        sum = sum = globals()['F2']                                    ## F2용량에서
+        sum = globals()['F2']                                    ## F2용량에서
         for l in range(1,number):      
             sum = sum - globals()[L2[l]]           ## F2부터 고장점 앞까지(고장점 포함X)의 부하량을 차례로 빼준다.
             globals()["ZRI_F2_{}".format(L2[l])]=sum  ## 값 입력
@@ -131,7 +131,7 @@ for i in range(1,7):#6개 지점
         #피더부터 분기점까지 계산.
     else :                                          ##L2에 고장점이 없으면
         number = L2.index(FRK) - L2.index("F2")    ## 피더랑 분기점 위치 차이만큼
-        sum = sum = globals()['F2']                  ## F2용량에서
+        sum = globals()['F2']                  ## F2용량에서
         for l in range(1,number+1):      
             sum = sum - globals()[L2[l]]            ## F2부터 분기점까지(분기점 포함이므로 number+1)의 부하량을 차례로 빼준다.
             globals()["ZRI_F2_{}".format(L2[l])]=sum  ## 값 입력
@@ -179,9 +179,14 @@ for i in range(1,7):#6개 지점
 
 
     if ZRI_F2_R == []:  
-        ZRI = globals()['F2'] 
+        if globals()['F2'] > min(ZRI_F3_R):
+            ZRI = globals()['F2']
+        else :
+            ZRI = min(ZRI_F3_R)
+
     elif ZRI_F3_R == []:
-        ZRI = globals()['F3'] 
+        ZRI = globals()['F3']
+
     else: 
         if min(ZRI_F3_R) > min(ZRI_F2_R):
             ZRI = min(ZRI_F3_R)
@@ -193,8 +198,6 @@ for i in range(1,7):#6개 지점
 
     else:
         print ("ZRI",i, " = ", ZRI, "복구 불가능합니다.") 
-
-    
  
         
    
