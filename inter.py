@@ -34,8 +34,6 @@ win.resizable(True, True)
 win.title("10JO")
 
 def on_button_click(button): #frame2 노드 받아오기 /종호좌표계 형태 유지 /frmae1과 협조 필요..
-        # print(int(button['text'][:button['text'].find(',')]))
-        # print(int(button['text'][button['text'].find(',')+1:]))
 
         # jh 리스트 생성
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][0] = int(button['text'][:button['text'].find(',')])
@@ -43,7 +41,6 @@ def on_button_click(button): #frame2 노드 받아오기 /종호좌표계 형태
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][2] = globals()[number.get()] #문자열 변수화
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][3] = name_entered.get()
         
-        #여기서부턴 주혁이형 알고리즘 넣기..
         draww()
         
 #frame1
@@ -81,7 +78,7 @@ frame3.pack(fill="both", expand=True, padx=10, pady=10)
 
 
 def draww():
-
+        ax  = 0
         fig, ax = plt.subplots()
 
         # x 축의 범위를 0에서 까지로 지정 #행, 열 값을 받아와서 설정 
@@ -131,7 +128,6 @@ def draww():
 
         # if canvas: canvas.get_tk_widget().pack_forget()
 
-        
         canvas = FigureCanvasTkAgg(fig, master=frame3)
         canvas.draw()
         canvas.get_tk_widget().pack()
