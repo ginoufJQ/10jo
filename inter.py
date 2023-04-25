@@ -7,6 +7,13 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image, ImageDraw, ImageFont
+
+#더미 이미지 생성
+img = Image.new("RGB",(640,480), (255,255,255))
+d = ImageDraw.Draw(img)
+
+img.save('temp.png')
 
 #종류 변수 선언
 fd = '\u2610'           #피더
@@ -34,18 +41,17 @@ win.resizable(True, True)
 win.title("10JO")
 
 def on_button_click(button): #frame2 노드 받아오기 /종호좌표계 형태 유지 /frmae1과 협조 필요..
-        
+
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][0] = int(button['text'][:button['text'].find(',')])
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][1] = int(button['text'][button['text'].find(',')+1:])
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][2] = globals()[number.get()] #문자열 변수화
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][3] = name_entered.get()
+        
         draww()
         
 #frame1_____________________________________________________________________________
 frame = tk.LabelFrame(win, text='입력을 마친 후, 대상 노드를 클릭해주세요.', padx=15, pady=15) 
 frame.pack(padx=10, pady=10) 
-
-
 
 ttk.Label(frame, text="종류를 선택해주세요.").grid(column=0, row=0)
 
@@ -77,7 +83,13 @@ for y in range(9):
 frame3 = tk.LabelFrame(win, text="계통도", padx=10, pady=10) 
 frame3.pack(fill="both", expand=True, padx=10, pady=10) 
 
+image=tk.PhotoImage(file="temp.png")
+label0 = ttk.Label(frame3, image=image)
+label0.pack()
+
 def draww():
+
+        global image
 
         fig, ax = plt.subplots(1,1)
 
@@ -128,10 +140,9 @@ def draww():
         
         plt.savefig("plt.png")
         image=tk.PhotoImage(file="plt.png")
-        os.remove("plt.png")
-        label=tk.Label(frame3, img=image)
-        label.pack()
-
+        # os.remove("plt.png")
+        label0.configure(image=image)
+        
         # label.configure(image=image)
         # canvas = FigureCanvasTkAgg(fig, master=frame3)
         # canvas.draw()
