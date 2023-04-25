@@ -1,10 +1,10 @@
 #terminal이나 cmd에 "pip install tk" 입력하구 실행해줘~
 
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-
 import tkinter as tk
 from tkinter import ttk
 
@@ -34,18 +34,18 @@ win.resizable(True, True)
 win.title("10JO")
 
 def on_button_click(button): #frame2 노드 받아오기 /종호좌표계 형태 유지 /frmae1과 협조 필요..
-
-        # jh 리스트 생성
+        
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][0] = int(button['text'][:button['text'].find(',')])
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][1] = int(button['text'][button['text'].find(',')+1:])
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][2] = globals()[number.get()] #문자열 변수화
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][3] = name_entered.get()
-        
         draww()
         
-#frame1
+#frame1_____________________________________________________________________________
 frame = tk.LabelFrame(win, text='입력을 마친 후, 대상 노드를 클릭해주세요.', padx=15, pady=15) 
 frame.pack(padx=10, pady=10) 
+
+
 
 ttk.Label(frame, text="종류를 선택해주세요.").grid(column=0, row=0)
 
@@ -55,31 +55,31 @@ number_chosen['values'] = ("0","fd","hline_fd","vline_fd", "hline_load", "vline_
 number_chosen.grid(column=0, row=1)
 number_chosen.current(0)
 
+button_quit = ttk.Button(master=frame, text="Quit", command=win.destroy).grid(column=3,row=1)
+
 ttk.Label(frame, text="용량을 입력해주세요.").grid(column=1, row=0)
 
 name = tk.StringVar()
 name_entered = ttk.Entry(frame, width=15, textvariable=name)
 name_entered.grid(column=1, row=1)
 
-#frmae2
+#frmae2_________________________________________________
 frame2 = tk.LabelFrame(win, text="노드", padx=15, pady=10) 
 frame2.pack(fill="both", expand=False, padx=15, pady=10) 
 
-# grid 자동 생성
 for y in range(9):
    for x in range(15):
       button = tk.Button(frame2, text=f"{y}, {x}")
       button.config(command=lambda button=button: on_button_click(button))
       button.grid(column=x, row=y)
 
-#frmae3 /주혁이형 출력물을 띄웁니다~
+#frmae3 /주혁이형 출력물을 띄웁니다~ ____________________________
 frame3 = tk.LabelFrame(win, text="계통도", padx=10, pady=10) 
 frame3.pack(fill="both", expand=True, padx=10, pady=10) 
 
-
 def draww():
-        ax  = 0
-        fig, ax = plt.subplots()
+
+        fig, ax = plt.subplots(1,1)
 
         # x 축의 범위를 0에서 까지로 지정 #행, 열 값을 받아와서 설정 
         plt.xlim(0, 20)
@@ -125,13 +125,18 @@ def draww():
         plt.gca().spines['bottom'].set_visible(False)
         plt.tick_params(labelbottom=False, labelleft=False)
         plt.tick_params(labeltop=False, labelright=False)
-
-        # if canvas: canvas.get_tk_widget().pack_forget()
-
-        canvas = FigureCanvasTkAgg(fig, master=frame3)
-        canvas.draw()
-        canvas.get_tk_widget().pack()
         
+        plt.savefig("plt.png")
+        image=tk.PhotoImage(file="plt.png")
+        os.remove("plt.png")
+        label=tk.Label(frame3, img=image)
+        label.pack()
+
+        # label.configure(image=image)
+        # canvas = FigureCanvasTkAgg(fig, master=frame3)
+        # canvas.draw()
+        # canvas.get_tk_widget().pack()
+        # canvas.get_tk_widget().destroy()
 
 name_entered.focus()
 win.mainloop()
