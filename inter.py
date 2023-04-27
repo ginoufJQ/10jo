@@ -47,6 +47,7 @@ def on_button_click(button): #frame2 노드 받아오기 /종호좌표계 형태
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][1] = int(button['text'][button['text'].find(',')+1:])
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][2] = globals()[number.get()] #문자열 변수화
         jh[int(button['text'][:button['text'].find(',')])][int(button['text'][button['text'].find(',')+1:])][3] = name_entered.get()
+        button.configure(text=globals()[number.get()])
         
         draww()
         
