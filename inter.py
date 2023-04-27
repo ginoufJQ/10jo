@@ -22,6 +22,7 @@ vline_fd = '\u2502'     #피더에 연결된 수직방향 선로
 hline_load = '\u2500'   #부하에 연결된 수평방향 선로
 vline_load = '\u2502'   #부하에 연결된 수직방향 선로
 sw = '\u25CB'           #개폐기
+reset = ''
 
 jh = [
     [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]], 
@@ -57,7 +58,7 @@ ttk.Label(frame, text="종류를 선택해주세요.").grid(column=0, row=0)
 
 number = tk.StringVar()
 number_chosen = ttk.Combobox(frame, width=15, textvariable=number, state='readonly')
-number_chosen['values'] = ("0","fd","hline_fd","vline_fd", "hline_load", "vline_load", "sw") #list 읽을 때, 유니코드로 해석하도록 설계
+number_chosen['values'] = ("reset","fd","hline_fd","vline_fd", "hline_load", "vline_load", "sw") #list 읽을 때, 유니코드로 해석하도록 설계
 number_chosen.grid(column=0, row=1)
 number_chosen.current(0)
 
@@ -109,8 +110,8 @@ def draww():
 
         for i in range(9):
                 for j in range(15):
-                        if jh[i][j][2] == 0 : #공백 처리 
-                                plt.plot([])
+                        if jh[i][j][2] == reset : #공백 처리 
+                                ax.text(j, i, '' , fontsize=12)
                         
                         elif jh[i][j][2] == fd : #피더 생성 
                                 ax.text(j, i, '\u2610' , fontsize=12)
@@ -127,7 +128,7 @@ def draww():
                         elif jh[i][j][2] == vline_load : #부하 수직 직선 생성 
                                 ax.text(j, i, '│' , fontsize=12)
 
-                        else :                          #개폐기 생성 
+                        elif jh[i][j][2] == sw :                         #개폐기 생성 
                                 ax.text(j+0.03, i, '\u25CB' , fontsize=12)
 
         #spines 숨기기
