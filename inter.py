@@ -1,13 +1,14 @@
 #terminal이나 cmd에 "pip install tk" 입력하구 실행해줘~
 
+import numpy as np
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import tkinter as tk
-from tkinter import ttk
-from PIL import Image, ImageDraw, ImageFont
+from tkinter import ttk, messagebox
+from PIL import Image, ImageDraw
 
 #더미 이미지 생성
 img = Image.new("RGB",(640,480), (255,255,255))
@@ -37,7 +38,7 @@ jh = [
 ]
 
 win = tk.Tk()
-win.geometry("980x900")
+win.geometry("1400x900")
 win.resizable(True, True)
 win.title("10JO")
 
@@ -50,26 +51,48 @@ def on_button_click(button): #frame2 노드 받아오기 /종호좌표계 형태
         button.configure(text=globals()[number.get()])
         
         draww()
-        
-#frame1_____________________________________________________________________________
-frame = tk.LabelFrame(win, text='입력을 마친 후, 대상 노드를 클릭해주세요.', padx=15, pady=15) 
-frame.pack(padx=10, pady=10) 
 
-ttk.Label(frame, text="종류를 선택해주세요.").grid(column=0, row=0)
+def on_save_click():
+       np.save('jh.npy', jh)
+       messagebox.showinfo("시스템 알림", "저장이 완료되었습니다!")
+            
+def on_load_click():
+        global jh
+
+        jh = np.load('jh.npy')
+        messagebox.showinfo("시스템 알림", "불러오기가 완료되었습니다!")
+
+        draww()
+
+        return jh
+
+#frame1_____________________________________________________________________________
+frame = tk.LabelFrame(win, text='조작 기판', padx=15, pady=15) 
+frame.pack(side="left", padx=10, pady=10) 
+
+fframe = tk.LabelFrame(frame, text='입력을 마친 후, 대상 노드를 클릭해주세요.', padx=15, pady=15) 
+fframe.pack()
+
+fframe2 = tk.LabelFrame(frame, text='기능 키', padx=15, pady=15) 
+fframe2.pack(side="left")
+
+save = ttk.Button(fframe2, text="저장하기")
+save.pack(side="left",padx=1, pady=5)
+save.config(command=on_save_click)
+
+load = ttk.Button(fframe2, text="불러오기")
+load.pack(padx=1, pady=5)
+load.config(command=on_load_click)
 
 number = tk.StringVar()
-number_chosen = ttk.Combobox(frame, width=15, textvariable=number, state='readonly')
+number_chosen = ttk.Combobox(fframe, width=15, textvariable=number, state='readonly')
 number_chosen['values'] = ("reset","fd","hline_fd","vline_fd", "hline_load", "vline_load", "sw") #list 읽을 때, 유니코드로 해석하도록 설계
-number_chosen.grid(column=0, row=1)
+number_chosen.pack()
 number_chosen.current(0)
 
-button_quit = ttk.Button(master=frame, text="Quit", command=win.destroy).grid(column=3,row=1)
-
-ttk.Label(frame, text="용량을 입력해주세요.").grid(column=1, row=0)
-
 name = tk.StringVar()
-name_entered = ttk.Entry(frame, width=15, textvariable=name)
-name_entered.grid(column=1, row=1)
+name_entered = ttk.Entry(fframe, width=15, textvariable=name)
+name_entered.pack()
 
 #frmae2_________________________________________________
 frame2 = tk.LabelFrame(win, text="노드", padx=15, pady=10) 
@@ -89,9 +112,10 @@ image=tk.PhotoImage(file="temp.png")
 label0 = ttk.Label(frame3, image=image)
 label0.pack()
 
+
 def draww():
 
-        global image
+        global image, jh
 
         fig, ax = plt.subplots(1,1)
 
