@@ -17,11 +17,11 @@ d = ImageDraw.Draw(img)
 img.save('temp.png')
 
 #종류 변수 선언
-fd = '\u2610'           #피더
-hline_fd = '\u2500'     #피더에 연결된 수평방향 선로
-vline_fd = '\u2502'     #피더에 연결된 수직방향 선로
-hline_load = '\u2500'   #부하에 연결된 수평방향 선로
-vline_load = '\u2502'   #부하에 연결된 수직방향 선로
+메인피더 = '\u2610'           #메인피더
+연계피더 = '\u2610'           #피더
+분기점 = '┴'
+수평부하 = '\u2500'     #수평방향 선로
+수직부하 = '\u2502'     #수직방향 선로
 sw = '\u25CB'           #개폐기
 reset = ''
 
@@ -66,6 +66,10 @@ def on_load_click():
 
         return jh
 
+def on_grid_click():
+       plt.savefig('grid.png')
+       messagebox.showinfo("시스템 알림", "계통도 출력이 완료되었습니다!")
+
 #frame1_____________________________________________________________________________
 frame = tk.LabelFrame(win, text='조작 기판', padx=15, pady=15) 
 frame.pack(side="left", padx=10, pady=10) 
@@ -77,16 +81,20 @@ fframe2 = tk.LabelFrame(frame, text='기능 키', padx=15, pady=15)
 fframe2.pack(side="left")
 
 save = ttk.Button(fframe2, text="저장하기")
-save.pack(side="left",padx=1, pady=5)
+save.pack(side="top",padx=1, pady=5)
 save.config(command=on_save_click)
 
 load = ttk.Button(fframe2, text="불러오기")
 load.pack(padx=1, pady=5)
 load.config(command=on_load_click)
 
+grid = ttk.Button(fframe2, text="계통도 png로 출력하기")
+grid.pack(padx=1, pady=5)
+grid.config(command=on_grid_click)
+
 number = tk.StringVar()
 number_chosen = ttk.Combobox(fframe, width=15, textvariable=number, state='readonly')
-number_chosen['values'] = ("reset","fd","hline_fd","vline_fd", "hline_load", "vline_load", "sw") #list 읽을 때, 유니코드로 해석하도록 설계
+number_chosen['values'] = ("reset","메인피더","연계피더","수평부하","수직부하","분기점","sw") #list 읽을 때, 유니코드로 해석하도록 설계
 number_chosen.pack()
 number_chosen.current(0)
 
@@ -137,23 +145,23 @@ def draww():
                 for j in range(15):
                         if jh[i][j][2] == reset : #공백 처리 
                                 ax.text(j, i, '' , fontsize=12)
-                        
-                        elif jh[i][j][2] == fd : #피더 생성 
+
+                        elif jh[i][j][2] == 메인피더 : #피더 생성 
                                 ax.text(j, i, '\u2610' , fontsize=12)
+
+                        elif jh[i][j][2] == 연계피더 : #피더 생성 
+                                ax.text(j, i, '\u2610' , fontsize=12)
+
+                        elif jh[i][j][2] == 분기점 :  
+                                ax.text(j, i, '┴' , fontsize=12)                
                         
-                        elif jh[i][j][2] == hline_fd : #피더 수평 직선 생성
+                        elif jh[i][j][2] == 수평부하 : #피더 수평 직선 생성
                                 ax.text(j, i, '──' , fontsize=12)
 
-                        elif jh[i][j][2] == vline_fd : #피더 수직 직선 생성 
+                        elif jh[i][j][2] == 수직부하 : #피더 수직 직선 생성 
                                 ax.text(j+0.1, i, '│' , fontsize=12)
 
-                        elif jh[i][j][2] == hline_load : #부하 수평 직선 생성 
-                                ax.text(j, i, '──' , fontsize=12)
-
-                        elif jh[i][j][2] == vline_load : #부하 수직 직선 생성 
-                                ax.text(j, i, '│' , fontsize=12)
-
-                        elif jh[i][j][2] == sw :                         #개폐기 생성 
+                        elif jh[i][j][2] == sw :     #개폐기 생성 
                                 ax.text(j+0.03, i, '\u25CB' , fontsize=12)
 
         #spines 숨기기
@@ -166,7 +174,8 @@ def draww():
         
         plt.savefig("plt.png")
         image=tk.PhotoImage(file="plt.png")
-        # os.remove("plt.png")
+        os.remove("plt.png")
+        os.remove("temp.png")
         label0.configure(image=image)
         
         # label.configure(image=image)
