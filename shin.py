@@ -13,7 +13,7 @@ FM = 14000
 for i in range(1,7): 
     globals()["Z{}".format(i)]=Z[i-1]
    
-for i in range(1,4):
+for i in range(1,3):
     globals()["FM{}".format(i)]=FM
 
 for i in range(1,3):
