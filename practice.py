@@ -82,14 +82,48 @@ for i in range(1, n2+1):
 # print(SF, Z, FRK)
 
 
-a=0
+a=b=0
+
 for i in range(8):
     for j in range(13):
         if jh[i][j][2] == fd and jh[i][j][3] != 14000:
-            
             jh[i][j][4] = SF[a]
             a += 1
 
-# for a in range(a,n1):
+for i in range(8):
+    for j in range(13):
+        if ((jh[i][j][2] == hline or jh[i][j][2] == vline) and jh[i][j][3] != 0) or jh[i][j][2] == frk1:
+            jh[i][j][4] = Z[b]
+            b += 1
+
+for i in range(8):
+    for j in range(13):
+        if jh[i][j][2] == frk1:
+            FRK.append(jh[i][j][4])
+
+
+#메인피더의 x좌표, y좌표 구하기
+mx=my=0     
+for i in range(8):
+    for j in range(13):
+        if jh[i][j][2] == mf:
+            my = jh[i][j][0]
+            mx = jh[i][j][1]
+
+
+for i in range(8):
+    for j in range(13):
+        if jh[i][j][2] == frk1:
+            for q in range(8):
+                if jh[q][j][2] == frk1:
+                    dsdsdsd
+                else:
+                    
+
 print(jh[0][7][4])
 print(jh[7][12][4])
+print(jh[7][3][4])
+print(jh[7][5][4])
+print(jh[7][7][4])
+print(FRK[0])
+print(SF, Z, FRK)
