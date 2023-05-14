@@ -128,13 +128,15 @@ for i in range(8):
             if p == str(jh[i][j][4])[1:]:       # 연계피더의 번호와 p가 일치한다면?
                 x_num = j - mx                  # 행방향으로 L'p'리스트에 넣어줘야할 개수
                 y_num = my - i                  # 열방향으로 L'p'리스트에 넣어줘야할 개수
-                for q in range(y_num):
-                    globals()['L' + str(q)].append(jh[q][j][4])    
-                for r in range(0, x_num, -1):
-                    globals()['L' + str(q)].append(jh[i][r][4])
+                for q in range(y_num+1):
+                    if jh[q][j][4] > 0:
+                        globals()['L' + str(p)].append(jh[q][j][4])    
+                for r in range(0, x_num+1, -1):
+                    if jh[i][r][4] > 0:    
+                        globals()['L' + str(p)].append(jh[i][r][4])
                 p+=1
                 
-
+print(L1)
 
 # print(jh[0][7][4])
 # print(jh[7][12][4])
