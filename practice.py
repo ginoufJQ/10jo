@@ -102,7 +102,7 @@ for i in range(8):
             FRK.append(jh[i][j][4])
 
 
-#메인피더의 x좌표, y좌표 구하기
+# 메인피더의 x좌표, y좌표 구하기
 mx=my=0     
 for i in range(8):
     for j in range(13):
@@ -110,20 +110,36 @@ for i in range(8):
             my = jh[i][j][0]
             mx = jh[i][j][1]
 
+# 연계피더 개수만큼 빈 L리스트 생성
+L = []                                        # 리스트 이름을 저장할 빈 리스트
 
+for i in range(1, n1+1):
+    L_name = 'L' + str(i)                     # 리스트 이름 생성
+    L.append(L_name)                          # 리스트 이름을 L 리스트에 추가
+    exec("%s = []" % L_name)                  # 리스트 생성
+
+print(L)
+
+
+p=1
 for i in range(8):
     for j in range(13):
-        if jh[i][j][2] == frk1:
-            for q in range(8):
-                if jh[q][j][2] == frk1:
-                    dsdsdsd
-                else:
-                    
+        if jh[i][j][2] == fd:                   # jh에서 연계피더를 찾아           
+            if p == str(jh[i][j][4])[1:]:       # 연계피더의 번호와 p가 일치한다면?
+                x_num = j - mx                  # 행방향으로 L'p'리스트에 넣어줘야할 개수
+                y_num = my - i                  # 열방향으로 L'p'리스트에 넣어줘야할 개수
+                for q in range(y_num):
+                    globals()['L' + str(q)].append(jh[q][j][4])    
+                for r in range(0, x_num, -1):
+                    globals()['L' + str(q)].append(jh[i][r][4])
+                p+=1
+                
 
-print(jh[0][7][4])
-print(jh[7][12][4])
-print(jh[7][3][4])
-print(jh[7][5][4])
-print(jh[7][7][4])
-print(FRK[0])
-print(SF, Z, FRK)
+
+# print(jh[0][7][4])
+# print(jh[7][12][4])
+# print(jh[7][3][4])
+# print(jh[7][5][4])
+# print(jh[7][7][4])
+# print(FRK[0])
+# print(SF, Z, FRK)
