@@ -175,7 +175,7 @@ def draww():
         plt.savefig("plt.png")
         image=tk.PhotoImage(file="plt.png")
         os.remove("plt.png")
-        os.remove("temp.png")
+        # os.remove("temp.png")
         label0.configure(image=image)
         
         # label.configure(image=image)
