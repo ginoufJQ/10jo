@@ -125,18 +125,19 @@ p=1
 for i in range(8):
     for j in range(13):
         if jh[i][j][2] == fd:                   # jh에서 연계피더를 찾아           
-            if p == str(jh[i][j][4])[1:]:       # 연계피더의 번호와 p가 일치한다면?
-                x_num = j - mx                  # 행방향으로 L'p'리스트에 넣어줘야할 개수
-                y_num = my - i                  # 열방향으로 L'p'리스트에 넣어줘야할 개수
+            if p == int(str(jh[i][j][4])[-1]):  # 연계피더의 번호와 p가 일치한다면?
+                x_num = abs(j - mx)                  # 행방향으로 L'p'리스트에 넣어줘야할 개수
+                y_num = abs(my - i)                  # 열방향으로 L'p'리스트에 넣어줘야할 개수
                 for q in range(y_num+1):
-                    if jh[q][j][4] > 0:
-                        globals()['L' + str(p)].append(jh[q][j][4])    
-                for r in range(0, x_num+1, -1):
-                    if jh[i][r][4] > 0:    
-                        globals()['L' + str(p)].append(jh[i][r][4])
+                    if jh[q][j][3] > 0:
+                        globals()["L" + str(p)].append(jh[q][j][4])   
+                for r in range(x_num+1, 0, -1):
+                    # print(x_num)
+                    if jh[my][r][3] > 0:    
+                        globals()["L" + str(p)].append(jh[my][r][4]) 
                 p+=1
                 
-print(L1)
+print(L2)
 
 # print(jh[0][7][4])
 # print(jh[7][12][4])
