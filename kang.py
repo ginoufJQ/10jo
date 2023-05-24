@@ -149,7 +149,23 @@ for len1 in range(1,len(mg)+1):
     else:
       mg[len1-1][len2-1] = [globals()['F' + str(len2)]]
 
-new_ZRI_List = []
+UR = 0 # 복구불가능지점
+UR_L = 0 # 복구불가능지점 부하량
+
+new_ZRI = 0
+new_ZRI_list = [[ [] for col1 in range(len(Z))] for row1 in range(len(Z))]
+
+for p in range(len(Z)):
+  for q in range(len(Z)):
+     if ZRI_list[p][q] < 0:
+        UR = ZRI_list[p][q]
+        UR_L = globals()
+     else:
+        pass 
+     
+for b in range(1, len(Z)+1):   
+    FP = "Z{}".format(b) 
+    new_ZRI_list = mg[b-1][]
 
 
 print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
