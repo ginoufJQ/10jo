@@ -157,6 +157,7 @@ for j in range(1, 7):
     count = sum(1 for sublist in result_list for x in sublist if x and x < 0)
     count_list.append(count)
 
+
                  
 
 fig, ax = plt.subplots(1,1)
@@ -197,7 +198,18 @@ for i in range(8):
                 elif jh[i][j][2] == frk1 :   #분기점(ㅗ)
                         plt.hlines(i,j-0.6, j+0.6, color='black',linestyles='solid', linewidth=0.5 )
                         plt.vlines(j, i-0.6, i, color='black', linestyles='solid', linewidth=0.5)
-                        
+                        if jh[i][j][4]==0:  #Z1, Z2 이런 명칭이 할당되지 않을 때는 공백 처리 
+                                ax.text(j,i,'')
+                        else:               #Z1, Z2 이런 명칭 할당된 거 읽어와서 표시하기 
+                                ax.text(j-0.3,i+0.7, jh[i][j][4], fontsize='9', color='black', alpha=1.0)
+                                z_count +=1 #Z1, Z2 이런 식으로 나올 때마다 숫자 1씩 상승 => 고복지 음수 개수 리스트에서 위치 찾을 때 필요 
+                                
+
+                                if count_list[z_count-1]>=1: #고복지 음수 개수가 1개 이상일 때, warning 표시 
+                                    extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
+                                    plt.imshow(img, extent=extent, alpha=0.2*count_list[z_count-1]) 
+                                else :                      #아닌 경우에는 표시하지x 
+                                    ax.text(j,i,'')
 
                 elif jh[i][j][2] == frk2 :   #분기점(ㅜ)      
                         plt.hlines(i,j-0.6, j+0.6, color='black',linestyles='solid', linewidth=0.5 )
@@ -227,7 +239,7 @@ for i in range(8):
 
                                 if count_list[z_count-1]>=1: #고복지 음수 개수가 1개 이상일 때, warning 표시 
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
-                                    plt.imshow(img, extent=extent) 
+                                    plt.imshow(img, extent=extent, alpha=0.2*count_list[z_count-1]) 
                                 else :                      #아닌 경우에는 표시하지x 
                                     ax.text(j,i,'')   
                                         
@@ -244,7 +256,7 @@ for i in range(8):
 
                                 if count_list[z_count-1]>=1:
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
-                                    plt.imshow(img, extent=extent) 
+                                    plt.imshow(img, extent=extent, alpha= 0.2*count_list[z_count-1]) 
                                 else :  
                                     ax.text(j,i,'')
                                            
