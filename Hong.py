@@ -175,7 +175,7 @@ plt.gca().invert_yaxis()
 ax = plt.gca() # 현재 그래프의 축 객체 가져오기
 ax.xaxis.set_ticks_position('top') # x축 위치를 위쪽으로 지정
 
-img = Image.open('image.png')
+img = Image.open('./image.png')
 z_count = 0
 
 for i in range(8):
@@ -218,17 +218,17 @@ for i in range(8):
                 elif jh[i][j][2] == hline : #수평 직선 생성
                         plt.hlines(i,j-0.6, j+0.6, color='black',linestyles='solid', linewidth=0.5 )
                         
-                        if jh[i][j][4]==0:
+                        if jh[i][j][4]==0:  #Z1, Z2 이런 명칭이 할당되지 않을 때는 공백 처리 
                                 ax.text(j,i,'')
-                        else:    
+                        else:               #Z1, Z2 이런 명칭 할당된 거 읽어와서 표시하기 
                                 ax.text(j-0.3,i+0.7, jh[i][j][4], fontsize='9', color='black', alpha=1.0)
-                                z_count +=1 
-                                print(z_count)
+                                z_count +=1 #Z1, Z2 이런 식으로 나올 때마다 숫자 1씩 상승 => 고복지 음수 개수 리스트에서 위치 찾을 때 필요 
+                                
 
-                                if count_list[z_count-1]>=1:
+                                if count_list[z_count-1]>=1: #고복지 음수 개수가 1개 이상일 때, warning 표시 
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
                                     plt.imshow(img, extent=extent) 
-                                else :  
+                                else :                      #아닌 경우에는 표시하지x 
                                     ax.text(j,i,'')   
                                         
                 
@@ -238,9 +238,9 @@ for i in range(8):
                         if jh[i][j][4]==0:
                                 ax.text(j,i,'')
                         else:    
-                                ax.text(j,i+0.3, jh[i][j][4], fontsize='9', color='black', alpha=1.0)
+                                ax.text(j+0.1,i+0.3, jh[i][j][4], fontsize='9', color='black', alpha=1.0)
                                 z_count +=1 
-                                print(z_count) 
+                                 
 
                                 if count_list[z_count-1]>=1:
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
