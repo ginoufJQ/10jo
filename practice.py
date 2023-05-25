@@ -1,6 +1,6 @@
 
 #종류 변수 선언
-mf = '\u2610'           #메인피더
+mf = '\u2613'           #메인피더
 fd = '\u2610'           #피더
 frk1 = '\u2218'         #분기점(ㅗ)
 # frk2 = '유니코드'        #분기점(ㅜ)
@@ -49,22 +49,18 @@ for i in range(8):
 
 for i in range(8):
     for j in range(13):
-        if jh[i][j][2] == frk1:                     #frk1,2,3,4,5에 대해서도 넣기
+        if jh[i][j][2] == frk1:     #frk1,2,3,4,5에 대해서도 넣기
             nb += 1
 
 n2 = na + nb
 
-print(n1, n2, na, nb)
-# 이제 이 숫자로 리스트 폼 만들고나서 jh에 tag 할당할거임
+print(n1, n2, na, nb)   # 이제 이 숫자로 리스트 폼 만들고나서 jh에 tag 할당할거임
 
 def F(i):
     return "F"+str(i)
 
 def Load(i):
     return "Z"+str(i)
-
-# def jnuc(i):
-#     return "FRK"+str(i)
 
 SF = []
 Z = []
@@ -76,24 +72,19 @@ for i in range(1,n1+1):
 for i in range(1, n2+1):
     Z.append(Load(i))
 
-# for i in range(1, n3+1):          #FRK는 jh 5번째 원소에 할당한뒤에 해야할듯 할당이 먼저다!
-#     FRK.append()
-
-# print(SF, Z, FRK)
-
 
 a=b=0
 
 for i in range(8):
     for j in range(13):
-        if jh[i][j][2] == fd and jh[i][j][3] != 14000:
-            jh[i][j][4] = SF[a]
+        if jh[i][j][2] == fd and jh[i][j][3] != 14000:      # 종류가 피더이면서 용량이 14000이 아니면 연계피더로 본다 # 조건은 수정 가능
+            jh[i][j][4] = SF[a]                             # 연계피더일때 F1, F2,,, 태그 할당
             a += 1
 
 for i in range(8):
     for j in range(13):
-        if ((jh[i][j][2] == hline or jh[i][j][2] == vline) and jh[i][j][3] != 0) or jh[i][j][2] == frk1:
-            jh[i][j][4] = Z[b]
+        if ((jh[i][j][2] == hline or jh[i][j][2] == vline) and jh[i][j][3] != 0) or jh[i][j][2] == frk1:    # 종류가 선로이면서 용량이 0이 아니거나 / 분기점일때 부하로 본다
+            jh[i][j][4] = Z[b]                                                                              # 부하일때 Z1, Z2,,, 태그 할당
             b += 1
 
 for i in range(8):
@@ -110,6 +101,12 @@ for i in range(8):
             my = jh[i][j][0]
             mx = jh[i][j][1]
 
+print(mx,my)
+
+# 중복항을 포함한 프로토타입의 LL+"n" 리스트 생성
+for i in range(1, n1+1):
+    globals()['LL' + str(i)] = []
+
 # 연계피더 개수만큼 빈 L리스트 생성
 L = []                                        # 리스트 이름을 저장할 빈 리스트
 
@@ -118,25 +115,29 @@ for i in range(1, n1+1):
     L.append(L_name)                          # 리스트 이름을 L 리스트에 추가
     exec("%s = []" % L_name)                  # 리스트 생성
 
-print(L)
-
 
 p=1
 for i in range(8):
     for j in range(13):
-        if jh[i][j][2] == fd:                   # jh에서 연계피더를 찾아           
-            if p == int(str(jh[i][j][4])[-1]):  # 연계피더의 번호와 p가 일치한다면?
+        if jh[i][j][2] == fd:                        # jh에서 연계피더를 찾아    
+            if p == int(str(jh[i][j][4])[-1]):       # 연계피더의 번호와 p가 일치한다면?
                 x_num = abs(j - mx)                  # 행방향으로 L'p'리스트에 넣어줘야할 개수
-                y_num = abs(my - i)                  # 열방향으로 L'p'리스트에 넣어줘야할 개수
+                y_num = abs(my - i)                  # 열방향으로 L'p'리스트에 넣어줘야할 개수  
                 for q in range(y_num+1):
                     if jh[q][j][3] > 0:
-                        globals()["L" + str(p)].append(jh[q][j][4])   
-                for r in range(x_num+1, 0, -1):
-                    # print(x_num)
+                        globals()["LL" + str(p)].append(jh[q][j][4])   
+                for r in range(x_num, 0, -1):
                     if jh[my][r][3] > 0:    
-                        globals()["L" + str(p)].append(jh[my][r][4]) 
+                        globals()["LL" + str(p)].append(jh[my][r][4])
                 p+=1
-                
+
+# 중복항 제거하는 반복문 (L1에서 Z5가 중복됨)
+for i in range(1, p):
+    for value in globals()["LL" + str(i)]:
+        if value not in globals()["L" + str(i)]:
+            globals()["L" + str(i)].append(value)
+
+print(L1)
 print(L2)
 
 # print(jh[0][7][4])
@@ -145,4 +146,3 @@ print(L2)
 # print(jh[7][5][4])
 # print(jh[7][7][4])
 # print(FRK[0])
-# print(SF, Z, FRK)
