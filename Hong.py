@@ -157,7 +157,22 @@ for j in range(1, 7):
     count = sum(1 for sublist in result_list for x in sublist if x and x < 0)
     count_list.append(count)
 
-print(result_list_2)
+result_lists = []
+for j in range(1, 7):
+    result_lists.append(globals()["result_list_" + str(j)])
+
+negative_indices_lists = []
+
+for result_list in result_lists:
+    negative_indices = [index + 1 for index, sublist in enumerate(result_list) for value in sublist if value < 0]
+    negative_indices_lists.append(negative_indices)
+
+print(negative_indices_lists)
+
+
+
+
+   
 
 
 fig, ax = plt.subplots(1,1)
@@ -314,8 +329,7 @@ for i in range(8):
                 elif jh[i][j][2] == sw :    #개폐기 생성 
                         ax.add_artist(plt.Circle((j, i), 0.3, alpha=0.5, facecolor='none', edgecolor='black'))
                                 
-globals()["result_list_" + str(z_count)] = []
-print("result_list_" + str(z_count))                       
+                     
 
 #spines 숨기기
 plt.gca().spines['right'].set_visible(False)
