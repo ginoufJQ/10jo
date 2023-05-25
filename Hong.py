@@ -8,7 +8,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
 from PIL import Image
-
+import mplcursors
 
 
 #종류 변수 선언
@@ -170,11 +170,6 @@ for result_list in result_lists:
 print(negative_indices_lists)
 
 
-
-
-   
-
-
 fig, ax = plt.subplots(1,1)
 
 # x 축의 범위를 0에서 까지로 지정 #행, 열 값을 받아와서 설정 
@@ -193,6 +188,10 @@ ax.xaxis.set_ticks_position('top') # x축 위치를 위쪽으로 지정
 
 img = Image.open('./image.png')
 z_count = 0
+# mplcursors 활성화
+cursor = mplcursors.cursor(hover=True)
+
+
 
 for i in range(8):
         for j in range(13):
