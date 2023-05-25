@@ -8,7 +8,7 @@ FRK = 0
 
 
 #용량 입력
-Z = [500,500,1000,700,1200,1100,600,1000,500,900,700,800]
+Z = [500,500,5000,700,1200,1100,600,1000,500,900,700,800] # Z3=1000 값을 Z3=5000으로 바꿔서 해봄
 del sum
 FTL = [7200,9600,9600,7500,7900,10000,9000,9500]
 FM = 14000
@@ -54,9 +54,8 @@ FP
 
 # 빈 리스트 생성. 리스트는 Z1~Z6 6개, 6*6 리스트 생성
 ZRI_list = []
-new_L = []
 
-for r in range( len(Z)):
+for r in range(len(Z)):
     line = []
     for s in range( len(Z)):
         line.append([])
@@ -66,7 +65,7 @@ new_L = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in
 
 
 
-print(*ZRI_list, sep='\n')
+#print(*ZRI_list, sep='\n')
 # 빈 리스트 생성, F1~F8
 
 
@@ -149,28 +148,57 @@ for len1 in range(1,len(mg)+1):
     else:
       mg[len1-1][len2-1] = [globals()['F' + str(len2)]]
 
-UR = 0 # 복구불가능지점
-UR_L = 0 # 복구불가능지점 부하량
+UR_ZRI = [] # 복구불가능지점의 ZRI의 값
+UR_L = [[ [] for col2 in range(len(Z))] for row2 in range(len(Z))] # 복구불가능지점 부하량
 
-new_ZRI = 0
-new_ZRI_list = [[ [] for col1 in range(len(Z))] for row1 in range(len(Z))]
+new_ZRI = 0 # 복구불가능지점의 새로운 ZRI 값
+new_ZRI_list = [[[ [] for col3 in range(len(Z))] for row3 in range(len(SP))] for depth3 in range(len(Z))] # 복구불가능지점에 대한 각 고장점과 연계피더에 대한 ZRI 값이 담긴 list 
+new_ZRI_UR_L_list = [[[ [] for col4 in range(len(Z))] for row4 in range(len(SP))] for depth4 in range(len(Z))] 
+new_ZRI_list2 = [[[ [] for col5 in range(len(Z))] for row5 in range(len(SP))] for depth5 in range(len(Z))]
 
-for p in range(len(Z)):
-  for q in range(len(Z)):
-     if ZRI_list[p][q] < 0:
-        UR = ZRI_list[p][q]
-        UR_L = globals()
+for p in range(1, len(Z)+1):   
+  for q in range(1, len(Z)+1):
+     if ZRI_list[p-1][q-1]:
+        if ZRI_list[p-1][q-1] < [0]:
+          UR_ZRI.append(ZRI_list[p-1][q-1]) # ZRI_list에서 음수인 값을 찾아서 UR_ZRI 리스트에 인덱스값과 해당 음수값을 저장
+          UR_L[p-1][q-1].append(globals()['Z'+str(q)]) # 복구불가능지점의 부하량을 고장점별로 UR_L 리스트에 저장
+        else:
+          pass
      else:
-        pass 
+        pass
      
-for b in range(1, len(Z)+1):   
-    FP = "Z{}".format(b) 
-    new_ZRI_list = mg[b-1][]
+
+     
+# mg_value  연계피더 값
+# UR_L_value 복구불가능지점 부하량
+for b1 in range(1, len(Z)+1):  #고장점 1~12에서 고장날 때
+    for f1 in range(1,len(SP)+1) : 
+      mg_value = mg[b1-1][f1-1] #연계피더 1~8 값 중 하나 선택
+      for l1 in range(1,len(Z)+1):
+        UR_L_value = UR_L[b1-1][l1-1] #복구불가능지점 부하량 리스트에서 부하량 하나 선택
+        if UR_L[b1-1][l1-1]: #만약 복구불가능지점이라면 (리스트에 값이 있다면)
+          new_ZRI = mg_value[0] - UR_L_value[0] # 앞에서 선택한 mg_value 값에서 UR_L_value 값 빼기 (연계피더 - 복구불가능지점 부하량)
+          new_ZRI_list[b1-1][f1-1][l1-1].append([new_ZRI]) # 이것을 new_ZRI_list 리스트에 저장
+          new_ZRI_list2[b1-1][f1-1][l1-1].append([new_ZRI])
+          new_ZRI_UR_L_list[b1-1][f1-1][l1-1].append(new_ZRI) # 복구 불가능지점의 ZRI만 따로 볼려고 만듦
+        else:
+          new_ZRI_list[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1])      # 만약 복구불가능지점이 아니라면 원래 ZRI 값을 리스트에 저장
+          new_ZRI_list2[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1])   
+          
 
 
 print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 print(*mg, sep='\n')
 
+print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+print(*UR_L, sep='\n')
+
+print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+
+for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력,,
+   for j0 in range(len(new_ZRI_list[i0])):
+      print(new_ZRI_list[i0][j0])
+   print() 
             
 
 
@@ -178,10 +206,29 @@ print(*mg, sep='\n')
 
 ##############################################
 
-#scaler = MinMaxScaler()
+#for p in range(1, len(Z)+1):   
+#  for q in range(1,len(SP)+1) : 
+#    for r in range(1, len(Z)+1):
+#      if new_ZRI_list2[p-1][q-1][r-1] == []:
+#          new_ZRI_list2[p-1][q-1][r-1] = [0]
+#      else:
+#          pass
 
-#scaler.fit(ZRI_list[])
-#ZRI_list_scaled = scaler.transform(ZRI_list)
+#min_val = min(min(min(i) for i in j) for j in new_ZRI_list2)
+#max_val = max(max(max(i) for i in j) for j in new_ZRI_list2)
+#norm_new_ZRI_list = [[[ [] for col6 in range(len(Z))] for row6 in range(len(SP))] for depth6 in range(len(Z))]
+
+#for p1 in range(1, len(Z)+1):  
+#  for q1 in range(1, len(SP)+1): 
+#    for r1 in range(1, len(Z)+1):
+#      if new_ZRI_list[p1-1][q1-1][r1-1]:
+#          x = new_ZRI_list[p1-1][q1-1][r1-1]
+#          min_value = min_val[0]
+#          max_value = max_val[0]
+#          norm_new_ZRI_list[p1-1][q1-1][r1-1].append((x_value - min_value) / (max_val - min_value))
+#      else:
+#          pass
+
 
 #print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-#print(ZRI_list_scaled)
+#print(norm_new_ZRI_list)
