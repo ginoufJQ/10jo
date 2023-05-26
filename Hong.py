@@ -168,11 +168,11 @@ for result_list in result_lists:
     negative_indices_lists.append(negative_indices)
 
 print(negative_indices_lists)
+ 
 
 
 
 
-   
 
 
 fig, ax = plt.subplots(1,1)
@@ -191,8 +191,34 @@ plt.gca().invert_yaxis()
 ax = plt.gca() # 현재 그래프의 축 객체 가져오기
 ax.xaxis.set_ticks_position('top') # x축 위치를 위쪽으로 지정
 
+# 주석 추가 함수
+def add_annotation(event):
+    if event.inaxes == ax:
+        x = event.xdata
+        y = event.ydata
+        ax.annotate(f"Z{negative_indices_lists[z_count-1]}", xy=(x, y), xytext=(x+3, y+6),
+                    arrowprops=dict(facecolor='black', arrowstyle='->'))
+        plt.draw()
+
+# 주석 숨기는 함수
+def remove_annotation(event):
+    if event.inaxes == ax:
+        for annotation in ax.texts:
+            annotation.set_visible(False)
+        plt.draw()
+
+# 이벤트 처리 함수 연결
+plt.connect('motion_notify_event', add_annotation)  # 커서 가져다 대면 주석 표시
+plt.connect('button_release_event', remove_annotation)  # 커서 뗐을 때 주석 숨기기
+
+
+
+
+
+
 img = Image.open('./image.png')
-z_count = 0
+
+z_count = 0                              
 
 for i in range(8):
         for j in range(13):
@@ -287,7 +313,7 @@ for i in range(8):
                                 if count_list[z_count-1]>=1: #고복지 음수 개수가 1개 이상일 때, warning 표시 
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
                                     plt.imshow(img, extent=extent, alpha=0.2*count_list[z_count-1]) 
-                                else :                      #아닌 경우에는 표시하지x 
+                       
                                     ax.text(j,i,'')   
 
                 elif jh[i][j][2] == hline : #수평 직선 생성
@@ -303,10 +329,11 @@ for i in range(8):
                                 if count_list[z_count-1]>=1: #고복지 음수 개수가 1개 이상일 때, warning 표시 
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
                                     plt.imshow(img, extent=extent, alpha=0.2*count_list[z_count-1]) 
+    
+
                                 else :                      #아닌 경우에는 표시하지x 
                                     ax.text(j,i,'')   
                                         
-                
 
                 elif jh[i][j][2] == vline : #수직 직선 생성 
                         plt.vlines(j, i-0.6, i+0.6, color='black', linestyles='solid', linewidth=0.5)
@@ -321,6 +348,10 @@ for i in range(8):
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
                                     plt.imshow(img, extent=extent, alpha= 0.2*count_list[z_count-1]) 
                                     
+                                    ax.annotate(f"Z{negative_indices_lists[z_count-1]}", xy=(j, i), xytext=(j+3, i+6),
+                                                arrowprops=dict(facecolor='black', arrowstyle='->'))
+                                  
+
                                 else :  
                                     ax.text(j,i,'')
                                            
@@ -338,5 +369,6 @@ plt.gca().spines['left'].set_visible(False)
 plt.gca().spines['bottom'].set_visible(False)
 plt.tick_params(labelbottom=False, labelleft=False)
 plt.tick_params(labeltop=False, labelright=False)
+
 
 plt.show()
