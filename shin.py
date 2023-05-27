@@ -8,10 +8,17 @@ FRK = 0
 
 
 #용량 입력
-Z = [500,500,1000,700,1200,1100,600,1000,500,900,700,800]
+Z = [500,500,1000,700,1200,1100,600,1000,500,1000,2000,3000] ###Z 10 11 12를 각각 1000,2000,3000으로 늘려 극단적 상항 가정
 del sum
-FTL = [7200,9600,9600,7500,7900,10000,9000,9500]
+FTL = [7200,9600,9600,7500,7900,10000,14000,9500] ### F7도 용량 0으로 일단 없앰
 FM = 14000
+
+
+# #용량 입력
+# Z = [500,500,1000,700,1200,1100,600,1000,500,900,700,800]
+# del sum
+# FTL = [7200,9600,9600,7500,7900,10000,9000,9500]
+# FM = 14000
 
 for i in range(1, len(Z)+1): 
     globals()["Z{}".format(i)]=Z[i-1]
@@ -157,8 +164,6 @@ print(df)
 new_ZRI_list = []
 new_ZRI_list  = [[[] for x in range(len(Z))] for y in range(len(Z))]
 
-ZRI_list[2][3] = [-99999]
-
 ##하다 말았음
 for o in range(len(SP)+1) : 
     for n in range(len(Z)+1) :
@@ -183,30 +188,19 @@ print(df)
 ###############################직선경로부하로 계산해서 문제상황 일어나는 경우 알고리즘###############
 
 
-#용량 입력
-Z = [500,500,1000,700,1200,1100,600,1000,500,1000,2000,3000] ###Z 10 11 12를 각각 1000,2000,3000으로 늘려 극단적 상항 가정
-del sum
-FTL = [7200,9600,9600,7500,7900,10000,14000,9500] ### F7도 용량 0으로 일단 없앰
-FM = 14000
-
-for i in range(1, len(Z)+1): 
-    globals()["Z{}".format(i)]=Z[i-1]
-   
-for i in range(1,len(FTL)+1):
-    globals()["FM{}".format(i)]=FM
-
-for i in range(1,len(FTL)+1):
-    globals()["FTL{}".format(i)]=FTL[i-1]
-
-for i in range(1,len(FTL)+1):
-    globals()["F{}".format(i)]=FM-FTL[i-1]
-    
-# Z2고장시에 ZRI값   [6300]  []  [2300]  [3300]  [4000]  [5200]  [4400]  [5000]  [6000]  [-1500]  [-500]  [1500] -----> Z10, Z11에서 복구 안됨
+#  ZRI값  
+# Z3   [6300]  []      []  [-99999]  [4000]  [5200]  [4400]  [5000]  [6000]  [-1500]  [-500]  [1500]----> Z10, Z11에서 복구 안됨
+# Z4   [6300]  []      []        []  [4000]  [5200]  [4400]  [5000]  [6000]  [-1500]  [-500]  [1500]----> Z10, Z11에서 복구 안됨
+# Z5   [6300]  []      []        []      []  [5200]  [4400]  [5000]  [6000]       []      []      []
+# Z6   [6300]  []      []        []      []      []  [4400]  [5000]  [6000]       []      []      []
+# Z7       []  []      []        []      []      []      []  [5000]  [6000]       []      []      []
+# Z8       []  []      []        []      []      []      []      []  [6000]       []      []      []
+# Z9       []  []      []        []      []      []      []      []      []       []      []      []
+# Z10      []  []      []        []      []      []      []      []      []       []  [-500]  [1500]---->  Z11에서 복구 안됨
+# Z11      []  []      []        []      []      []      []      []      []       []      []  [1500]
+# Z12      []  []      []        []      []      []      []      []      []       []      []      [] 
 
 
-# 위에서 L = ["Z2","Z3","Z4","Z5","Z6","Z7","Z8","Z9"] ##새로 추가함. 메인피더에 직선으로 달린 부하들을 새로 정의함
-
-#분기점 리스트 생성
 FRK_list= []
 for N in range( len(SP) ):
         FRK_list.append([])
@@ -215,34 +209,60 @@ for i in range(1 ,len(SP)+1) :
     intersection = [x for x in globals()['L' + str(i)] if x in L]  # L이랑 L1~L8 안의 값을 차례대로 비교를 할껀데, 가장 먼저 겹치는 게 F1~F8의 분기점임!!!! 
     FRK_list[i-1].append(intersection[0]) ###리스트에 값 입력
 
-
-###FRK_list 출력
+###FRK_list 출력. 연계피더의 분기점 리스트 생성
 df = pd.DataFrame({'각 연계피더의 분기점': FRK_list}, index=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8'])
 print(df)
+
+
 
 
 #####각 분기점의 부하를 감당하는 피더를 찾는다 
 #-----------> ZRI_list[각 고장점][분기점]에서 분기점의 고장복구지수를 찾고,
 # ----------->  new_L[각 고장점][연계피더][분기점]에서 어떤 피더가 감당하는지 찾음  
+# -----------> FRK_list[연계피더][0]는 연계피더의 분기점
+FRK_feeder_list=  [[[] for x in range(len(SP))] for y in range(len(Z))]
 
-
-#분기점의 마진용량  리스트 생성
-FRK_margin_list=  [[[] for x in range(len(SP))] for y in range(len(Z))]
-
-
-for i in range(1 ,len(SP)+1) :
-    intersection = [x for x in globals()['L' + str(i)] if x in L]  # 각 연계피더의 분기점에서의 여유용량
-    FRK_list[i-1].append(intersection[0]) ###리스트에 값 입력
-
-### mg 출력
-df = pd.DataFrame(FRK_margin_list, columns =  ['F1','F2','F3','F4','F5','F6','F7','F8'], 
+for i in range(len(Z)) :   # 각 고장점에 대해서 검사
+    for l in range(len(SP)) :  # 각 연계피더의 분기점에 대해서 검사. 연계피더 F1의 분기점,F2의 분기점.... F8까지 검사
+        for k in (   (int(FRK_list[l][0].replace('Z','')))-1,  (int(FRK_list[l][0].replace('Z','')))-1 ) : # 분기점 위치
+            for j in range(len(SP)) :       # 어떤 연계피더가 공급하는지 모두 검사
+                    if ZRI_list[i][k] == new_L[i][j][k] :  
+                         if ZRI_list[i][k] != []:
+                                FRK_feeder_list[i][l] = "F"+ str(j+1)  ##리스트에 입력
+        
+### FRK_feeder_list 출력. 각 고장시에 연계피더의 분기점부하를 감당하고 있는 연계피더
+df = pd.DataFrame(FRK_feeder_list, columns =  ['F1','F2','F3','F4','F5','F6','F7','F8'], 
                                 index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
 print(df)
 
 
 
-##### 그 피더의 여유용량을 찾는다.
+
+
+FRK_fdm_list=  [[[] for x in range(len(SP))] for y in range(len(Z))]
+
+for i in range(len(Z)) :
+    for j in range(len(SP)) :
+        if FRK_feeder_list[i][j] != []:
+            FRK_fdm_list[i][j] =   mg[i][int(FRK_feeder_list[i][j].replace('F',''))-1]
+
+### FRK_fdm_list 출력. 분기점을 감당하는 연계피더의 마진용량 리스트 생성
+df = pd.DataFrame(FRK_fdm_list, columns =  ['F1','F2','F3','F4','F5','F6','F7','F8'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+print(df)
+
+
+
+
 # ----------> mg[각 고장점][연계피더][0]해서 찾음 
+
+
+
+
+
+
+
+
 
 #############################################################################################
 

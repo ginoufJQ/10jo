@@ -8,7 +8,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
 from PIL import Image
-
+import mplcursors
+import mpldatacursor
+from mpldatacursor import HighlightingDataCursor
 
 
 #종류 변수 선언
@@ -148,27 +150,45 @@ ZRI_list = [[[], [-2500], [3000], [4000], [3000], [4000]],
             [[], [], [3000], [-4000], [], [4000]],
             [[], [], [3000], [4000], [2000], []]]
 
-for j in range(1, 7):
+for j in range(1, 7):        #Z1 ... Zn의 모든 고장 구간별 고복지 리스트 
     globals()["result_list_" + str(j)] = [ZRI_list[i][j-1] for i in range(len(ZRI_list))]
 
-count_list = []
+count_list = []              #Z1 ....Zn의 모든 고장 구간별 고복지 음수 개수 리스트 
 for j in range(1, 7):
     result_list = globals()["result_list_" + str(j)]
     count = sum(1 for sublist in result_list for x in sublist if x and x < 0)
     count_list.append(count)
 
-result_lists = []
+result_lists = []            
 for j in range(1, 7):
     result_lists.append(globals()["result_list_" + str(j)])
 
-negative_indices_lists = []
+negative_indices_lists = []  #고장의 원인을 넣은 리스트 
 
-for result_list in result_lists:
+for result_list in result_lists:  #음수가 되는 부분을 찾아서 위치를 찾기 
     negative_indices = [index + 1 for index, sublist in enumerate(result_list) for value in sublist if value < 0]
     negative_indices_lists.append(negative_indices)
 
 print(negative_indices_lists)
- 
+
+def find_position(jh, Z, target):      #Z1, Z2, Z3 ...Zn의 좌표값을 찾아줌 
+    for sublist in jh:
+        for item in sublist:
+            if item[4] == target:
+                return item[:2]
+    return None
+
+positions = [find_position(jh, Z, target) for target in Z]
+
+print(positions)
+
+
+x = [position[0] for position in positions]    #Z의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
+y = [position[1] for position in positions]    #Z의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
+
+print("x =", x)
+print("y =", y)
+
 
 
 
@@ -191,32 +211,7 @@ plt.gca().invert_yaxis()
 ax = plt.gca() # 현재 그래프의 축 객체 가져오기
 ax.xaxis.set_ticks_position('top') # x축 위치를 위쪽으로 지정
 
-# 주석 추가 함수
-def add_annotation(event):
-    if event.inaxes == ax:
-        x = event.xdata
-        y = event.ydata
-        ax.annotate(f"Z{negative_indices_lists[z_count-1]}", xy=(x, y), xytext=(x+3, y+6),
-                    arrowprops=dict(facecolor='black', arrowstyle='->'))
-        plt.draw()
-
-# 주석 숨기는 함수
-def remove_annotation(event):
-    if event.inaxes == ax:
-        for annotation in ax.texts:
-            annotation.set_visible(False)
-        plt.draw()
-
-# 이벤트 처리 함수 연결
-plt.connect('motion_notify_event', add_annotation)  # 커서 가져다 대면 주석 표시
-plt.connect('button_release_event', remove_annotation)  # 커서 뗐을 때 주석 숨기기
-
-
-
-
-
-
-img = Image.open('./image.png')
+img = Image.open('./image.png') #이미지 불러오기 
 
 z_count = 0                              
 
@@ -233,7 +228,7 @@ for i in range(8):
                 elif jh[i][j][2] == fd : #연계피더 생성 
                         rect = plt.Rectangle((j-0.25,i-0.2), 0.5, 0.5, facecolor='none', edgecolor='black', linewidth=0.5)
                         ax.add_patch(rect)
-                        ax.text(j+0.3, i+0.3, jh[i][j][4], fontsize='10', color='black', alpha=1)
+                        ax.text(j+0.3, i+0.25, jh[i][j][4], fontsize='10', color='black', alpha=1)
                         
 
                 elif jh[i][j][2] == frk1 :   #분기점(ㅗ)
@@ -348,10 +343,10 @@ for i in range(8):
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
                                     plt.imshow(img, extent=extent, alpha= 0.2*count_list[z_count-1]) 
                                     
-                                    ax.annotate(f"Z{negative_indices_lists[z_count-1]}", xy=(j, i), xytext=(j+3, i+6),
-                                                arrowprops=dict(facecolor='black', arrowstyle='->'))
-                                  
-
+                                    annotation = ax.annotate(f"'Z{negative_indices_lists[z_count-1][0]}'", xy=(j, i), xytext=(j+3, i-6),
+                                                arrowprops=dict(color='red', arrowstyle='->'), color='red')
+                                    
+                                 
                                 else :  
                                     ax.text(j,i,'')
                                            
