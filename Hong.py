@@ -171,6 +171,22 @@ for result_list in result_lists:  #음수가 되는 부분을 찾아서 위치�
 
 print(negative_indices_lists)
 
+def format_indices_lists(indices_lists):       #고장 원인 부분 숫자에 Z붙여서 다시 리스트에 저장 
+    formatted_lists = []
+    for indices in indices_lists:
+        formatted_indices = [f'Z{index}' for index in indices]
+        formatted_lists.append(formatted_indices)
+    return formatted_lists
+
+# ...
+
+# result_lists에서 negative_indices_lists 생성
+
+# negative_indices_lists를 Z 형식으로 변환
+formatted_lists = format_indices_lists(negative_indices_lists)
+print(formatted_lists)
+
+
 def find_position(jh, Z, target):      #Z1, Z2, Z3 ...Zn의 좌표값을 찾아줌 
     for sublist in jh:
         for item in sublist:
@@ -183,15 +199,11 @@ positions = [find_position(jh, Z, target) for target in Z]
 print(positions)
 
 
-x = [position[0] for position in positions]    #Z의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
-y = [position[1] for position in positions]    #Z의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
+y_coords = [position[0] for position in positions]    #Z의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
+x_coords = [position[1] for position in positions]    #Z의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
 
-print("x =", x)
-print("y =", y)
-
-
-
-
+print("x =", x_coords)
+print("y =", y_coords)
 
 
 
@@ -213,7 +225,32 @@ ax.xaxis.set_ticks_position('top') # x축 위치를 위쪽으로 지정
 
 img = Image.open('./image.png') #이미지 불러오기 
 
-z_count = 0                              
+z_count = 0     
+
+# 주석을 저장할 변수
+annotations = []
+
+# hovering annotation 추가 함수
+def add_hovering_annotation(event):
+    if event.inaxes == ax:
+        # 모든 주석을 숨김
+        for annotation in annotations:
+            annotation.set_visible(False)
+
+        for x, y, formatted_list in zip(x_coords, y_coords, formatted_lists):
+            for format_index in formatted_list:
+                if x-0.3 <= event.xdata <= x+0.3 and y-0.3 <= event.ydata <= y+0.3:
+                    annotation = ax.annotate(f"{formatted_list}", xy=(x, y), xytext=(x+3, y-3),
+                                            arrowprops=dict(color='red', arrowstyle='->'), color='red')
+                    annotation.set_visible(True)  # 해당 주석을 표시
+                    annotations.append(annotation)
+        plt.draw()
+
+# 이벤트 처리 함수 연결
+plt.connect('motion_notify_event', add_hovering_annotation)  # 커서 가져다 대면 hovering annotation 표시
+
+
+
 
 for i in range(8):
         for j in range(13):
@@ -343,8 +380,8 @@ for i in range(8):
                                     extent = (j-0.3, j+0.3, i-0.3, i+0.3) 
                                     plt.imshow(img, extent=extent, alpha= 0.2*count_list[z_count-1]) 
                                     
-                                    annotation = ax.annotate(f"'Z{negative_indices_lists[z_count-1][0]}'", xy=(j, i), xytext=(j+3, i-6),
-                                                arrowprops=dict(color='red', arrowstyle='->'), color='red')
+                                    #annotation = ax.annotate(f"'Z{negative_indices_lists[z_count-1][0]}'", xy=(j, i), xytext=(j+3, i-6),
+                                    #            arrowprops=dict(color='red', arrowstyle='->'), color='red')
                                     
                                  
                                 else :  
