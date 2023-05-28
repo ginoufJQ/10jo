@@ -10,9 +10,9 @@ from LFClasses import Bus
 np.set_printoptions(precision=6, suppress=True) #과학적 표기법 무시!
 
 #%%     Data reading 
-Iine_Connectsions=np.array(pd.read_excel('/Users/mac/Desktop/졸작/backward-forward-sweep/69bus.xlsx', sheet_name="Sheet1"))
-Loads=np.array(pd.read_excel('/Users/mac/Desktop/졸작/backward-forward-sweep/69bus.xlsx', sheet_name="Sheet2"))
-Data_Settings=np.array(pd.read_excel('/Users/mac/Desktop/졸작/backward-forward-sweep/69bus.xlsx', sheet_name="Sheet3"))
+Iine_Connectsions=np.array(pd.read_excel('load-flow/69bus.xlsx', sheet_name="Sheet1"))
+Loads=np.array(pd.read_excel('load-flow/69bus.xlsx', sheet_name="Sheet2"))
+Data_Settings=np.array(pd.read_excel('load-flow/69bus.xlsx', sheet_name="Sheet3"))
 
 #%%     Initialization
 
