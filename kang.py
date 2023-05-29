@@ -120,8 +120,8 @@ for n in range(len(ZRI_list)):
 
 
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*ZRI_list, sep='\n')
+#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+#print(*ZRI_list, sep='\n')
 
 #print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 #print(*new_L, sep='\n')
@@ -187,48 +187,62 @@ for b1 in range(1, len(Z)+1):  #고장점 1~12에서 고장날 때
           
 
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*mg, sep='\n')
+#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+#print(*mg, sep='\n')
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*UR_L, sep='\n')
+#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+#print(*UR_L, sep='\n')
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
-for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력,,
-   for j0 in range(len(new_ZRI_list[i0])):
-      print(new_ZRI_list[i0][j0])
-   print() 
+#for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력,,
+#   for j0 in range(len(new_ZRI_list[i0])):
+#      print(new_ZRI_list[i0][j0])
+#   print() 
             
 
 
 
 
-##############################################
+##############################################정규화(f3)#############################
 
-#for p in range(1, len(Z)+1):   
-#  for q in range(1,len(SP)+1) : 
-#    for r in range(1, len(Z)+1):
-#      if new_ZRI_list2[p-1][q-1][r-1] == []:
-#          new_ZRI_list2[p-1][q-1][r-1] = [0]
-#      else:
-#          pass
-
-#min_val = min(min(min(i) for i in j) for j in new_ZRI_list2)
-#max_val = max(max(max(i) for i in j) for j in new_ZRI_list2)
-#norm_new_ZRI_list = [[[ [] for col6 in range(len(Z))] for row6 in range(len(SP))] for depth6 in range(len(Z))]
-
-#for p1 in range(1, len(Z)+1):  
-#  for q1 in range(1, len(SP)+1): 
-#    for r1 in range(1, len(Z)+1):
-#      if new_ZRI_list[p1-1][q1-1][r1-1]:
-#          x = new_ZRI_list[p1-1][q1-1][r1-1]
-#          min_value = min_val[0]
-#          max_value = max_val[0]
-#          norm_new_ZRI_list[p1-1][q1-1][r1-1].append((x_value - min_value) / (max_val - min_value))
-#      else:
-#          pass
+for p in range(1, len(Z)+1):   
+  for q in range(1,len(SP)+1) : 
+    for r in range(1, len(Z)+1):
+      new_ZRI_list2[p-1][q-1][r-1] = [[0]  if x==[] else x for x in new_ZRI_list2[p-1][q-1][r-1]] # min max 값 찾기 위해 []인 값을 모두 [0]으로 만들어 new_ZRI_list2에 넣기
+                                                                                                
 
 
-#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-#print(norm_new_ZRI_list)
+min_val = min(min(min(i) for i in j) for j in new_ZRI_list2)[0] #new_ZRI_list2에서 min 값 찾기
+max_val = max(max(max(i) for i in j) for j in new_ZRI_list2)[0] #new_ZRI_list2에서 max 값 찾기
+norm_new_ZRI_list = [[[ [] for col6 in range(len(Z))] for row6 in range(len(SP))] for depth6 in range(len(Z))] #min max 정규화 리스트
+
+for p1 in range(1, len(Z)+1):  
+  for q1 in range(1, len(SP)+1): 
+    for r1 in range(1, len(Z)+1):
+      if new_ZRI_list[p1-1][q1-1][r1-1][0] == []:  #만약 new_ZRI_list 값이 []이면 계산 안함
+          pass
+      else:
+          x = new_ZRI_list[p1-1][q1-1][r1-1][0]    #new_ZRI_list 값이 있으면 정규화 함
+          x_value = x[0]
+          min_value = min_val[0]
+          max_value = max_val[0]
+          norm_new_ZRI_list[p1-1][q1-1][r1-1].append((x_value - min_value) / (max_value - min_value)) #계산된 정규화 값 norm_new_ZRI_list에 넣기
+
+
+
+
+
+#########결과값 출력############
+
+for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력
+   for j0 in range(len(new_ZRI_list[i0])):
+      print(new_ZRI_list[i0][j0])
+   print()
+
+print("--------------------")
+
+for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
+   for j0 in range(len(norm_new_ZRI_list[i0])):
+      print(norm_new_ZRI_list[i0][j0])
+   print()
