@@ -174,7 +174,7 @@ print(negative_indices_lists)
 def format_indices_lists(indices_lists):       #고장 원인 부분 숫자에 Z붙여서 다시 리스트에 저장 
     formatted_lists = []
     for indices in indices_lists:
-        formatted_indices = [f'Z{index}' for index in indices]
+        formatted_indices = [f'(Z{index})' for index in indices]
         formatted_lists.append(formatted_indices)
     return formatted_lists
 
