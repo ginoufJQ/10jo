@@ -257,7 +257,7 @@ for i in range(8):
                 
 
                 if jh[i][j][2] == mf : #메인피더 생성 
-                        rect = plt.Rectangle((j-0.2,i-0.2), 0.5, 0.5, facecolor='none', edgecolor='black', linewidth=0.5)
+                        rect = plt.Rectangle((j-0.1,i-0.2), 0.5, 0.5, facecolor='none', edgecolor='black', linewidth=0.5)
                         ax.add_patch(rect)
                         ax.text(j-0.6, i+0.3, 'F', fontsize='10', color='black', alpha=1)
                         
