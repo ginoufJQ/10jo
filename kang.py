@@ -274,3 +274,4 @@ for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list
    print() 
 
 
+
