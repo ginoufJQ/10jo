@@ -169,7 +169,21 @@ for result_list in result_lists:  #음수가 되는 부분을 찾아서 위치�
     negative_indices = [index + 1 for index, sublist in enumerate(result_list) for value in sublist if value < 0]
     negative_indices_lists.append(negative_indices)
 
-print(negative_indices_lists)
+
+Z_trouble = [index + 1 for index, sublist in enumerate(negative_indices_lists) if sublist] #고장 복구 불가 부분 반환 
+
+
+def format_indices_lists(indices_lists):
+    formatted_lists = []
+    for indices in indices_lists:
+        formatted_indices = [f'Z{index}' for index in indices]
+        formatted_lists.append(formatted_indices)
+    return formatted_lists
+
+formatted_Z_trouble = format_indices_lists([Z_trouble])[0] #고장 복구 불가 부분 Zn꼴로 저장 
+print(formatted_Z_trouble)
+
+
 
 def format_indices_lists(indices_lists):       #고장 원인 부분 숫자에 Z붙여서 다시 리스트에 저장 
     formatted_lists = []
@@ -196,7 +210,6 @@ def find_position(jh, Z, target):      #Z1, Z2, Z3 ...Zn의 좌표값을 찾아�
 
 positions = [find_position(jh, Z, target) for target in Z]
 
-print(positions)
 
 def find_position(jh, SF, target):      #F1, F2.....Fn의 좌표값을 찾아줌 
     for sublist in jh:
@@ -207,22 +220,36 @@ def find_position(jh, SF, target):      #F1, F2.....Fn의 좌표값을 찾아줌
 
 F_positions = [find_position(jh, SF, target) for target in SF]
 
-print(F_positions)
+def find_position(jh, formatted_Z_trouble, target):      #Z1, Z2, Z3 ...Zn의 좌표값을 찾아줌 
+    for sublist in jh:
+        for item in sublist:
+            if item[4] == target:
+                return item[:2]
+    return None
+
+formatted_Z_trouble_positions = [find_position(jh, formatted_Z_trouble, target) for target in formatted_Z_trouble]
+
+print(formatted_Z_trouble_positions)
 
 
 y_coords = [position[0] for position in positions]    #Z의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
 x_coords = [position[1] for position in positions]    #Z의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
 
-print("Z_x =", x_coords)
-print("Z_y =", y_coords)
 
-y_F = [position[0] for position in F_positions]    #F의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
-x_F = [position[1] for position in F_positions]    #F의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
+# y_F = [position[0] for position in F_positions]    #F의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
+# x_F = [position[1] for position in F_positions]    #F의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
 
-print("F_x =", x_F)
-print("F_y =", y_F)
+# print('y=',y_F)
+# print('x=',x_F)
 
+y_F = [7, 0]    #일단 임의로 설정... 나중에 받아올 때는 위에 꺼로  지금은 일단 임시 
+x_F = [12, 7]
 
+y_Z_trouble = [position[0] for position in formatted_Z_trouble_positions]    #복구 불가 지점의 Z 좌표값 
+x_Z_trouble = [position[1] for position in formatted_Z_trouble_positions]    
+
+print('y=',y_Z_trouble)
+print('x=',x_Z_trouble)
 
 fig, ax = plt.subplots(1,1)
 
@@ -266,6 +293,24 @@ def add_hovering_annotation(event):
 # 이벤트 처리 함수 연결
 plt.connect('motion_notify_event', add_hovering_annotation)  # 커서 가져다 대면 hovering annotation 표시
 
+for i in range(2):     #F랑 Z 좌표 비교해서 ㄴ ㄱ ┌ ┛ 4가지 모양 
+    if x_Z_trouble[i] <= x_F[i] and y_Z_trouble[i] >= y_F[i]:
+        plt.vlines(x_Z_trouble[i],y_F[i], y_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+        plt.hlines(y_F[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+
+    elif x_Z_trouble[i] <= x_F[i] and y_Z_trouble[i] <= y_F[i]:
+        plt.hlines(y_Z_trouble[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+        plt.vlines(x_F[i], y_Z_trouble[i], y_F[i], color='red', linestyles='solid', linewidth=0.5)
+
+    elif x_Z_trouble[i] >= x_F[i] and y_Z_trouble[i] >= y_F[i]:
+        plt.hlines(y_Z_trouble, x_F[i], x_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
+        plt.vlines(x_F, y_F, y_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
+        
+    elif x_Z_trouble[i] >= x_F[i] and y_Z_trouble[i] <= y_F[i]:
+        plt.hlines(y_F, x_F[i], x_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
+        plt.vlines(x_Z_trouble, y_Z_trouble, y_F, color='red', linestyles='solid', linewidth=0.5)    
+
+
 
 
 
@@ -274,7 +319,7 @@ for i in range(8):
                 
 
                 if jh[i][j][2] == mf : #메인피더 생성 
-                        rect = plt.Rectangle((j-0.1,i-0.2), 0.5, 0.5, facecolor='none', edgecolor='black', linewidth=0.5)
+                        rect = plt.Rectangle((j-0.2,i-0.2), 0.5, 0.5, facecolor='none', edgecolor='black', linewidth=0.5)
                         ax.add_patch(rect)
                         ax.text(j-0.6, i+0.3, 'F', fontsize='10', color='black', alpha=1)
                         
@@ -409,7 +454,13 @@ for i in range(8):
                 elif jh[i][j][2] == sw :    #개폐기 생성 
                         ax.add_artist(plt.Circle((j, i), 0.3, alpha=0.5, facecolor='none', edgecolor='black'))
                                 
-                     
+
+
+
+
+
+
+
 
 #spines 숨기기
 plt.gca().spines['right'].set_visible(False)
