@@ -11,6 +11,8 @@ from PIL import Image
 import mplcursors
 import mpldatacursor
 from mpldatacursor import HighlightingDataCursor
+from matplotlib.collections import LineCollection
+
 
 
 #종류 변수 선언
@@ -293,22 +295,103 @@ def add_hovering_annotation(event):
 # 이벤트 처리 함수 연결
 plt.connect('motion_notify_event', add_hovering_annotation)  # 커서 가져다 대면 hovering annotation 표시
 
-for i in range(2):     #F랑 Z 좌표 비교해서 ㄴ ㄱ ┌ ┛ 4가지 모양 
+
+
+# for i in range(len(x_F)):     #F랑 Z 좌표 비교해서 ㄴ ㄱ ┌ ┛ 4가지 모양 선로 증설 
+#     if x_Z_trouble[i] <= x_F[i] and y_Z_trouble[i] >= y_F[i]:
+#         plt.vlines(x_Z_trouble[i],y_F[i], y_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+#         plt.hlines(y_F[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+
+#     elif x_Z_trouble[i] <= x_F[i] and y_Z_trouble[i] <= y_F[i]:
+#         plt.hlines(y_Z_trouble[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+#         plt.vlines(x_F[i], y_Z_trouble[i], y_F[i], color='red', linestyles='solid', linewidth=0.5)
+
+#     elif x_Z_trouble[i] >= x_F[i] and y_Z_trouble[i] >= y_F[i]:
+#         plt.hlines(y_Z_trouble, x_F[i], x_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
+#         plt.vlines(x_F, y_F, y_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
+
+#     elif x_Z_trouble[i] >= x_F[i] and y_Z_trouble[i] <= y_F[i]:
+#         plt.hlines(y_F, x_F[i], x_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
+#         plt.vlines(x_Z_trouble, y_Z_trouble, y_F, color='red', linestyles='solid', linewidth=0.5)  
+
+# 그래프를 숨기기 위한 함수
+def hide_graph(lines):
+    for line in lines:
+        line.set_visible(False)
+
+# 그래프를 표시하는 함수
+def show_graph(lines):
+    for line in lines:
+        line.set_visible(True)
+
+
+# 그래프 그리기
+lines_to_hide = []  # 숨길 선들을 저장하는 리스트
+
+for i in range(2):     # F랑 Z 좌표 비교해서 ㄴ ㄱ ┌ ┛ 4가지 모양 선로 증설 
     if x_Z_trouble[i] <= x_F[i] and y_Z_trouble[i] >= y_F[i]:
-        plt.vlines(x_Z_trouble[i],y_F[i], y_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
-        plt.hlines(y_F[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+        line1 = plt.vlines(x_Z_trouble[i],y_F[i], y_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+        line2 = plt.hlines(y_F[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+        lines_to_hide.extend([line1, line2])
 
     elif x_Z_trouble[i] <= x_F[i] and y_Z_trouble[i] <= y_F[i]:
-        plt.hlines(y_Z_trouble[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
-        plt.vlines(x_F[i], y_Z_trouble[i], y_F[i], color='red', linestyles='solid', linewidth=0.5)
+        line1 = plt.hlines(y_Z_trouble[i], x_Z_trouble[i], x_F[i], color='red', linestyles='solid', linewidth=0.5)
+        line2 = plt.vlines(x_F[i], y_Z_trouble[i], y_F[i], color='red', linestyles='solid', linewidth=0.5)
+        lines_to_hide.extend([line1, line2])
 
     elif x_Z_trouble[i] >= x_F[i] and y_Z_trouble[i] >= y_F[i]:
-        plt.hlines(y_Z_trouble, x_F[i], x_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
-        plt.vlines(x_F, y_F, y_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
-        
+        line1 = plt.hlines(y_Z_trouble[i], x_F[i], x_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+        line2 = plt.vlines(x_F[i], y_F[i], y_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+        lines_to_hide.extend([line1, line2])
+
     elif x_Z_trouble[i] >= x_F[i] and y_Z_trouble[i] <= y_F[i]:
-        plt.hlines(y_F, x_F[i], x_Z_trouble, color='red', linestyles='solid', linewidth=0.5)
-        plt.vlines(x_Z_trouble, y_Z_trouble, y_F, color='red', linestyles='solid', linewidth=0.5)    
+        line1 = plt.hlines(y_F[i], x_F[i], x_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+        line2 = plt.vlines(x_Z_trouble[i], y_Z_trouble[i], y_F[i], color='red', linestyles='solid', linewidth=0.5)
+        lines_to_hide.extend([line1, line2])
+
+# 그래프 숨기기
+hide_graph(lines_to_hide)
+
+# 마우스 클릭 이벤트 처리 함수
+def on_mouse_click(event):
+    if event.xdata is None or event.ydata is None:
+        return
+
+    # 마우스 좌표
+    x = event.xdata
+    y = event.ydata
+
+    # 숨긴 선들을 다시 표시
+    show_graph(lines_to_hide)
+
+    # 마우스 위치에 해당하는 선을 숨김
+    for line in lines_to_hide:
+        segments = line.get_segments()
+        for segment in segments:
+            x_values = segment[:, 0]
+            y_values = segment[:, 1]
+            if np.any(np.isclose(x, x_values)) and np.any(np.isclose(y, y_values)):
+                line.set_visible(False)
+                break
+        else:
+            line.set_visible(True)
+
+    # 그래프 업데이트
+    plt.draw()
+
+
+# 마우스 버튼 뗄 때 선을 숨김
+def on_mouse_release(event):
+    hide_graph(lines_to_hide)
+    plt.draw()
+
+# 마우스 이벤트 연결
+fig = plt.gcf()
+fig.canvas.mpl_connect('button_release_event', on_mouse_release)
+
+# 마우스 클릭 이벤트 연결
+fig.canvas.mpl_connect('button_press_event', on_mouse_click)
+
 
 
 
