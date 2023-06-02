@@ -1,5 +1,4 @@
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
 
 
 sum = 0
@@ -8,7 +7,7 @@ FRK = 0
 
 
 #용량 입력
-Z = [500,500,5000,700,1200,1100,600,1000,500,900,700,800] # Z3=1000 값을 Z3=5000으로 바꿔서 해봄
+Z = [500,500,5000,700,1200,1100,5600,1000,500,900,700,800] # Z3=1000 값을 Z3=5000으로 바꿔서 해봄 #Z7=600 값을 Z7=5600으로 바꿈
 del sum
 FTL = [7200,9600,9600,7500,7900,10000,9000,9500]
 FM = 14000
@@ -54,12 +53,14 @@ FP
 
 # 빈 리스트 생성. 리스트는 Z1~Z6 6개, 6*6 리스트 생성
 ZRI_list = []
+ZRI_list2 = []
 
 for r in range(len(Z)):
     line = []
     for s in range( len(Z)):
         line.append([])
     ZRI_list.append(line)
+    ZRI_list2.append(line)
 
 new_L = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in range(len(Z))]
 
@@ -114,14 +115,15 @@ for n in range(len(ZRI_list)):
   for m in range(len(ZRI_list[n])):
     if ZRI_list[n][m]:
       ZRI_list[n][m] = [max(ZRI_list[n][m])]
+      ZRI_list2[n][m] = [max(ZRI_list[n][m])]
     else:
       ZRI_list[n][m] = []
-     
+      ZRI_list2[n][m] = []
 
 
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*ZRI_list, sep='\n')
+#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+#print(*ZRI_list, sep='\n')
 
 #print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 #print(*new_L, sep='\n')
@@ -160,7 +162,7 @@ for p in range(1, len(Z)+1):
   for q in range(1, len(Z)+1):
      if ZRI_list[p-1][q-1]:
         if ZRI_list[p-1][q-1] < [0]:
-          UR_ZRI.append(ZRI_list[p-1][q-1]) # ZRI_list에서 음수인 값을 찾아서 UR_ZRI 리스트에 인덱스값과 해당 음수값을 저장
+          UR_ZRI.append((p, q, ZRI_list[p-1][q-1])) # ZRI_list에서 음수인 값을 찾아서 UR_ZRI 리스트에 인덱스값과 해당 음수값을 저장
           UR_L[p-1][q-1].append(globals()['Z'+str(q)]) # 복구불가능지점의 부하량을 고장점별로 UR_L 리스트에 저장
         else:
           pass
@@ -178,16 +180,19 @@ for b1 in range(1, len(Z)+1):  #고장점 1~12에서 고장날 때
         UR_L_value = UR_L[b1-1][l1-1] #복구불가능지점 부하량 리스트에서 부하량 하나 선택
         if UR_L[b1-1][l1-1]: #만약 복구불가능지점이라면 (리스트에 값이 있다면)
           new_ZRI = mg_value[0] - UR_L_value[0] # 앞에서 선택한 mg_value 값에서 UR_L_value 값 빼기 (연계피더 - 복구불가능지점 부하량)
-          new_ZRI_list[b1-1][f1-1][l1-1].append([new_ZRI]) # 이것을 new_ZRI_list 리스트에 저장
-          new_ZRI_list2[b1-1][f1-1][l1-1].append([new_ZRI])
+          new_ZRI_list[b1-1][f1-1][l1-1].append(new_ZRI) # 이것을 new_ZRI_list 리스트에 저장
+          new_ZRI_list2[b1-1][f1-1][l1-1].append(new_ZRI)
           new_ZRI_UR_L_list[b1-1][f1-1][l1-1].append(new_ZRI) # 복구 불가능지점의 ZRI만 따로 볼려고 만듦
-        else:
-          new_ZRI_list[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1])      # 만약 복구불가능지점이 아니라면 원래 ZRI 값을 리스트에 저장
-          new_ZRI_list2[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1])   
+        else:          # 만약 복구불가능지점이 아니라면 원래 ZRI 값을 리스트에 저장
+          if ZRI_list[b1-1][l1-1] == []: 
+            pass
+          else:
+            new_ZRI_list[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1][0])      
+            new_ZRI_list2[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1][0])   
           
 
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+""" print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 print(*mg, sep='\n')
 
 print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
@@ -199,36 +204,176 @@ for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔
    for j0 in range(len(new_ZRI_list[i0])):
       print(new_ZRI_list[i0][j0])
    print() 
-            
+
+print("---------------------")
+
+for i0 in range(len(new_ZRI_list2)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력,,
+   for j0 in range(len(new_ZRI_list2[i0])):
+      print(new_ZRI_list2[i0][j0])
+   print()       """
 
 
 
 
-##############################################
+##############################################정규화(f3)#############################
 
-#for p in range(1, len(Z)+1):   
-#  for q in range(1,len(SP)+1) : 
-#    for r in range(1, len(Z)+1):
-#      if new_ZRI_list2[p-1][q-1][r-1] == []:
-#          new_ZRI_list2[p-1][q-1][r-1] = [0]
-#      else:
-#          pass
-
-#min_val = min(min(min(i) for i in j) for j in new_ZRI_list2)
-#max_val = max(max(max(i) for i in j) for j in new_ZRI_list2)
-#norm_new_ZRI_list = [[[ [] for col6 in range(len(Z))] for row6 in range(len(SP))] for depth6 in range(len(Z))]
-
-#for p1 in range(1, len(Z)+1):  
-#  for q1 in range(1, len(SP)+1): 
-#    for r1 in range(1, len(Z)+1):
-#      if new_ZRI_list[p1-1][q1-1][r1-1]:
-#          x = new_ZRI_list[p1-1][q1-1][r1-1]
-#          min_value = min_val[0]
-#          max_value = max_val[0]
-#          norm_new_ZRI_list[p1-1][q1-1][r1-1].append((x_value - min_value) / (max_val - min_value))
-#      else:
-#          pass
+for p in range(1, len(Z)+1):   
+  for q in range(1,len(SP)+1) : 
+      new_ZRI_list2[p-1][q-1] = [[0]  if x==[] else x for x in new_ZRI_list2[p-1][q-1]] # min max 값 찾기 위해 []인 값을 모두 [0]으로 만들어 new_ZRI_list2에 넣기
+      ZRI_list2[p-1] = [[0]  if x==[] else x for x in ZRI_list2[p-1]]  #min max 값 찾기 위해 []인 값을 모두 [0]으로 만들어 ZRI_list2에저장                                                                 
 
 
-#print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-#print(norm_new_ZRI_list)
+min_val = min([min([min(i) for i in j]) for j in new_ZRI_list2])[0] #new_ZRI_list2에서 min 값 찾기
+max_val = max([max([max(i) for i in j]) for j in new_ZRI_list2])[0] #new_ZRI_list2에서 max 값 찾기
+norm_new_ZRI_list = [[[ [] for col6 in range(len(Z))] for row6 in range(len(SP))] for depth6 in range(len(Z))] #min max 정규화 리스트
+
+min_val1 = min([min(x) for x in ZRI_list2])[0] #ZRI_list2에서 min 값 찾기
+max_val1 = max([max(x) for x in ZRI_list2])[0] #ZRI_list2에서 max 값 찾기
+norm_ZRI_list = [[ [] for col7 in range(len(Z))] for row7 in range(len(Z))] # min max 정규화 리스트
+
+
+for p1 in range(1, len(Z)+1):  
+  for q1 in range(1, len(SP)+1): 
+    for r1 in range(1, len(Z)+1):
+      if new_ZRI_list[p1-1][q1-1][r1-1] == []:  #만약 new_ZRI_list 값이 []이면 계산 안함
+          pass
+      else:
+          x = new_ZRI_list[p1-1][q1-1][r1-1][0]    #new_ZRI_list 값이 있으면 정규화 함
+          norm_new_ZRI_list[p1-1][q1-1][r1-1].append((x - min_val) / (max_val - min_val)) #계산된 정규화 값 norm_new_ZRI_list에 넣기
+
+for p2 in range(1, len(Z)+1):  
+    for r2 in range(1, len(Z)+1):
+      if ZRI_list[p2-1][r2-1] == []:  #만약 ZRI_list 값이 []이면 계산 안함
+          pass
+      else:
+          x1 = ZRI_list[p2-1][r2-1][0]    #ZRI_list 값이 있으면 정규화 함
+          norm_ZRI_list[p2-1][r2-1].append((x1 - min_val1) / (max_val1 - min_val1)) #계산된 정규화 값 norm_ZRI_list에 넣기
+
+
+
+
+
+#########결과값 출력############
+""" print("--------------------")
+print(*ZRI_list, sep='\n') #고복지 값
+
+print("--------------------")
+print(*norm_ZRI_list, sep='\n') #고복지 정규화 값
+
+print("--------------------")
+for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력
+   for j0 in range(len(new_ZRI_list[i0])):
+      print(new_ZRI_list[i0][j0])
+   print()
+
+
+print("--------------------")
+for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
+   for j0 in range(len(norm_new_ZRI_list[i0])):
+      print(norm_new_ZRI_list[i0][j0])
+   print()  """
+
+################################# 목적함수F ####################################
+
+#####고장취약지점에서 어느쪽에서 고장이 났을 때 어떤 ZRI가 더 적은지##### 그때 고장지점이랑 고장취약지점 구함
+
+UR_list = [] #고장취약지점리스트 (중복있음)
+UR = [] #고장취약지점 (중복없음)
+
+UR_ZRI_min_list = [[[] for x in range(len(Z))] for y in range(len(Z))] # 고장이 났을 때 고장취약구간의 모든 ZRI 나타냄 (0 포함 : min 구하기 위해서)
+UR_ZRI_min = [] # 고장취약구간의 ZRI 중 가장 작은 값 
+UR_ZRI_min_inf_list = []
+
+
+for p in range(1,len(UR_ZRI)+1):
+    UR_list.append(UR_ZRI[p-1][1])
+    UR = list(set(UR_list)) 
+
+for r in range (1, len(Z)+1):
+    for q in range(1, len(UR)+1):
+        UR_ZRI_min_list[UR[q-1]-1][r-1].append(ZRI_list2[r-1][UR[q-1]-1])
+        if UR_ZRI_min_list[UR[q-1]-1][r-1] == []:
+           pass
+        else:
+           UR_ZRI_min = [min(row) for row in UR_ZRI_min_list] 
+
+for r in range (1, len(Z)+1):
+    for q in range(1, len(UR)+1):
+        if UR_ZRI_min[UR[q-1]-1][0] == UR_ZRI_min_list[UR[q-1]-1][r-1][0]:
+           UR_ZRI_min_inf_list.append((r, UR[q-1])) #고장점, 취약구간 ##[((2, 3), (2, 7), (3, 7), (4, 7), (5, 7), (6, 7))]
+        else:
+           pass
+
+UR_ZRI_min_inf = []
+for item in UR_ZRI_min_inf_list:
+    if item[1] not in [x[1] for x in UR_ZRI_min_inf]:
+        UR_ZRI_min_inf.append(item) #(고장점, 취약구간) ##[(2,3), (2,7)] 로 같은 ZRI(최소 ZRI)를 가지는 취약구간 제거
+
+#################################목적함수######################################
+
+######### 선로증설X ##########
+f1_1 = 0
+f2_1 = 0
+for a in range(1, len(UR_ZRI_min_inf)+1):
+    f3_1 = norm_ZRI_list[UR_ZRI_min_inf[a-1][0]][UR_ZRI_min_inf[a-1][1]][0]
+
+    def F1(w1, w2, w3):
+        return -(f1_1*w1) -(f2_1*w2) +(f3_1*w3)
+
+
+
+######## 선로증설O ###############
+f3_2_list = [[[] for x in range(len(Z))] for y in range(len(Z))]
+for b in range(1, len(UR_ZRI_min_inf)+1):
+   for c in range(1, len(SP)+1):
+     for d in range(1, len(UR_ZRI_min_inf)+1):
+        f3_2_list[UR_ZRI_min_inf[b-1][0]-1][UR_ZRI_min_inf[d-1][1]-1].append(norm_new_ZRI_list[UR_ZRI_min_inf[b-1][0]-1][c-1][UR_ZRI_min_inf[d-1][1]-1][0])
+
+
+for n in range(len(f3_2_list)):
+  for m in range(len(f3_2_list[n])):
+    if f3_2_list[n][m]:
+      f3_2_list[n][m] = [max(f3_2_list[n][m])]
+      f3_2_list[n][m] = [max(f3_2_list[n][m])]
+    else:
+      f3_2_list[n][m] = []
+      f3_2_list[n][m] = []
+
+f1_2 = 0
+f2_2 = 1
+for a in range(1, len(UR_ZRI_min_inf)+1):
+    f3_2 = f3_2_list[UR_ZRI_min_inf[a-1][0]][UR_ZRI_min_inf[a-1][1]][0]
+
+    def F2(w1, w2, w3):
+        return -(f1_2*w1) -(f2_2*w2) +(f3_2*w3)
+
+
+
+
+
+#####################################출력###############################
+
+
+""" print(*ZRI_list2, sep="\n")
+print("------------------") """
+print(*UR_ZRI_min_list, sep="\n")
+""" print("------------------")
+print(UR_ZRI_min)
+print("------------------") """
+
+print("--------------------")
+for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
+   for j0 in range(len(norm_new_ZRI_list[i0])):
+      print(norm_new_ZRI_list[i0][j0])
+   print() 
+
+print("--------------------")
+
+""" print(UR_ZRI_min_inf_list)
+print("------------------") """
+
+print(UR_ZRI_min_inf)
+print("------------------")
+print(*f3_2_list,sep="\n")
+print("------------------")
+

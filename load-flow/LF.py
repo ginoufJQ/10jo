@@ -10,9 +10,9 @@ from LFClasses import Bus
 np.set_printoptions(precision=6, suppress=True) #과학적 표기법 무시!
 
 #%%     Data reading 
-Iine_Connectsions=np.array(pd.read_excel('load-flow/sb_buss.xlsx', sheet_name="Sheet1"))
-Loads=np.array(pd.read_excel('load-flow/sb_buss.xlsx', sheet_name="Sheet2"))
-Data_Settings=np.array(pd.read_excel('load-flow/sb_buss.xlsx', sheet_name="Sheet3"))
+Iine_Connectsions=np.array(pd.read_excel('load-flow/sb_busss.xlsx', sheet_name="Sheet1"))
+Loads=np.array(pd.read_excel('load-flow/sb_busss.xlsx', sheet_name="Sheet2"))
+Data_Settings=np.array(pd.read_excel('load-flow/sb_busss.xlsx', sheet_name="Sheet3"))
 
 #%%     Initialization
 
@@ -66,36 +66,41 @@ while deviation>deviation_max:
         
  #%%     Post-processing 
 
-CC = np.array([abs(DNBranch[x].current) for x in range(0,Bus_numbers)])*1000000/12600
-VV = np.array([abs(DNBus[x].voltage) for x in range(0,Bus_numbers)])*12600
+CC = np.array([abs(DNBranch[x].current) for x in range(0,Bus_numbers)])*1000000/13200
+VV = np.array([abs(DNBus[x].voltage) for x in range(0,Bus_numbers)])*13200
 
 print( "=========위배한 것들, 전류전압순===============" )
 print(CC[CC > 352])
-print(VV[VV < 0.95*12600])
-print( "++++++++++++++++++++++++++++++++" )
+print(VV[VV < 0.95*13200])
 
-if len(CC[CC > 352]) | len(VV[VV < 0.95*12600]) != 0:
-    print("제약조건 이탈함.")
+if len(CC[CC > 352]) | len(VV[VV < 0.95*13200]) != 0:
+    print("제약조건 이탈!")
     #위배 있을 경우
 
 else:
-    print("-")
+    print("이상없음")
     #위배 없는 경우
 
-print( "++++++++++++++++++++++++++++++++" )
 print( "==========조류해석 결과, 전류전압순================" )
 print (pd.DataFrame(CC))
-
 print (pd.DataFrame(VV))
 
-plt.scatter( range(0,Bus_numbers),VV/12600)
-plt.xlabel('Buses')
+plt.scatter( range(0,Bus_numbers),VV)
+plt.xlabel('bus')
 plt.ylabel('Voltage')
-plt.title('Voltage profile')
+plt.title('Voltage')
+plt.axhline(13200*0.95, 0, 1, color='red', linestyle='--', linewidth=2)
+plt.ylim([13200*0.93, 13200])
 plt.show()
 
-plt.scatter( range(0,Bus_numbers),CC*12600/1000000)
-plt.xlabel('Branches')
+plt.scatter( range(0,Bus_numbers),CC)
+plt.xlabel('br')
 plt.ylabel('Current')
 plt.title('Current')
+plt.ylim([0, 352*1.05])
+plt.axhline(352, 0, 1, color='red', linestyle='--', linewidth=2)
 plt.show()
+
+#%% 배열합
+print(Iine_Connectsions[3]**2 + Iine_Connectsions[4]**2)
+print(sum(CC*np.sqrt( Iine_Connectsions[3]**2 + Iine_Connectsions[4]**2)))

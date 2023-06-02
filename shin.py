@@ -8,17 +8,11 @@ FRK = 0
 
 
 #용량 입력
-Z = [500,500,1000,700,1200,1100,600,1000,500,1000,2000,3000] ###Z 10 11 12를 각각 1000,2000,3000으로 늘려 극단적 상항 가정
+Z = [10,20,30,40,50,60,70,10,20,30,40,50,60,70,10,20,30,40,50,60,70]
 del sum
-FTL = [7200,9600,9600,7500,7900,10000,14000,9500] ### F7도 용량 0으로 일단 없앰
+FTL = [14000,10000,9000,8000,7000] ### F1 말단이라 여유용량 0
 FM = 14000
 
-
-# #용량 입력
-# Z = [500,500,1000,700,1200,1100,600,1000,500,900,700,800]
-# del sum
-# FTL = [7200,9600,9600,7500,7900,10000,9000,9500]
-# FM = 14000
 
 for i in range(1, len(Z)+1): 
     globals()["Z{}".format(i)]=Z[i-1]
@@ -32,21 +26,28 @@ for i in range(1,len(FTL)+1):
 for i in range(1,len(FTL)+1):
     globals()["F{}".format(i)]=FM-FTL[i-1]
     
-# F1~F8[6800,4400,4400,6500,6100,4000,5000,4500]
-# F5는 가로피더
+
 
 
 #직선경로. 일반화가 필요없음
-L = ["Z2","Z3","Z4","Z5","Z6","Z7","Z8","Z9"] ##새로 추가함. 메인피더에 직선으로 달린 부하들
-L0 = ["L1","L2","L3","L4","L5","L6","L7","L8"] ##L0로 수정함
-L1 = ["F1","Z1","Z6", "Z5","Z4","Z3","Z2","F"]   
-L2 = ["F2","Z6", "Z5","Z4","Z3","Z2","F"] 
-L3 = ["F3","Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]     
-L4 = ["F4","Z9", "Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]  
-L5 = ["F5","Z9", "Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]   
-L6 = ["F6","Z9", "Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]  
-L7 = ["F7","Z11","Z10","Z4","Z3","Z2","F"]  
-L8 = ["F8","Z12", "Z11","Z10","Z4","Z3","Z2","F"]  
+L = ["Z6","Z7","Z8","Z9","Z10","Z11","Z12","Z13"] ##새로 추가함. 메인피더에 직선으로 달린 부하들
+L0 = ["L1","L2","L3","L4"] ##L0로 수정함
+L1 = ["F1","Z1","Z2", "Z3","Z5", "Z12","Z11","Z10","Z9","Z8","Z7","Z6","F"]  
+L2 = ["F2","Z4","Z10", "Z9","Z8","Z7","Z6","F"]   
+L3 = ["F3","Z13", "Z12","Z11","Z10","Z9","Z8","Z7","Z6","F"] 
+L4 = ["F4","Z18","Z16","Z14", "Z8","Z7","Z6","F"]     
+L5 = ["F5","Z21", "Z20","Z19","Z17", "Z15", "Z13","Z12","Z11","Z10","Z9","Z8","Z7","Z6","F"]  
+
+
+
+
+dml = ['dml1', 'dml2','dml4', 'dml5']
+
+## 직선경로부하로 인한 오류에 쓰임. 굵은가지랑 가까운 쪽부터 부하값 써야함. 반대로 안되게 주의!!!
+dml1 = ["Z5","Z3","Z2","Z1"]
+dml2 = ['Z4']  
+dml4 = ['Z14', 'Z16', 'Z18']  
+dml5 = ['Z15', 'Z17', 'Z19','Z20','Z21']  
 
 
 
@@ -55,11 +56,19 @@ L8 = ["F8","Z12", "Z11","Z10","Z4","Z3","Z2","F"]
 #Main피더
 MP = "F" 
 #연계피더
-SP = ["F1","F2","F3","F4","F5","F6","F7","F8"] 
+SP = ["F1","F2","F3","F4","F5"] 
 #분기점
-FRK = ["Z3"] 
+FRK = [] 
 #고장점
 FP
+
+
+
+
+###########################  계통 바뀌어도 이 윗부분만 수정하면 됨! (df 출력시에 컬럼이랑 인덱스는 바꿔줘야함)###########################
+
+
+
 
 # 빈 리스트 생성. 리스트는 Z1~Z12 12개, 6*6 리스트 생성
 ZRI_list = []
@@ -70,13 +79,9 @@ for r in range( len(Z)):
         line.append([])
     ZRI_list.append(line)
 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*ZRI_list, sep='\n')
-
 new_L = []  # Z갯수 12 * F 갯수 8 행렬. 그안에 또 12개의 리스트.
 new_L = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in range(len(Z))] 
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*new_L, sep='\n')
+
 
 ########################################################################
 for b in range(1, len(Z)+1):   ###고장점 Z1~Z12 12개 지점
@@ -122,14 +127,14 @@ for n in range(len(ZRI_list)): ## ZRI_list의 행
 ############
 
 ###ZRI_list 출력
-df = pd.DataFrame(ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+df = pd.DataFrame(ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
 print(df)
 
 
 ###new_L 출력
-df = pd.DataFrame(new_L, columns = ['F1','F2','F3','F4','F5','F6','F7','F8'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+df = pd.DataFrame(new_L, columns = ['F1','F2','F3','F4','F5'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
 print(df)
 
 
@@ -143,7 +148,7 @@ for e in range(1, len(Z)+1):
       for g in range(1, len(Z)+1):
          for h in new_L[e-1][k-1][g-1]:
             if h in ZRI_list[e-1][g-1]:
-                mg[e-1][k-1].append(h)       ### 피더K의 여유용량을mg리스트에 넣음 
+                mg[e-1][k-1].append(h)       ### 피더K의 여유용량을 mg리스트에 넣음 
             else :
                pass
 
@@ -155,50 +160,30 @@ for len1 in range(1,len(mg)+1):      ### Z1~Z12에서 고장났을때가 행
       mg[len1-1][len2-1] = [globals()['F' + str(len2)]]       ### 연계안되는 피더의 여유용량
 
 ### mg 출력
-df = pd.DataFrame(mg, columns =  ['F1','F2','F3','F4','F5','F6','F7','F8'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+df = pd.DataFrame(mg, columns =  ['F1','F2','F3','F4','F5'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
 print(df)
 
 ########################## 선로 증설시의 뉴복지
 
-new_ZRI_list = []
-new_ZRI_list  = [[[] for x in range(len(Z))] for y in range(len(Z))]
-
-##하다 말았음
-for o in range(len(SP)+1) : 
-    for n in range(len(Z)+1) :
-        for m in range(len(Z)+1) :
-            if ZRI_list[n][m][0] < 0 :  ##고복지 값이 음수이면..
-             new_ZRI_list[n][m].append(ZRI_list[n][m][0] - mg[n][o][m])    ### (고장 전의 고복지 값) - (피더의 여유용량)  입력
-##하다 말았음
+# new_ZRI_list = []
+# new_ZRI_list  = [[[] for x in range(len(Z))] for y in range(len(Z))]
 
 
-###ZRI_list 출력
-df = pd.DataFrame(ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
-print(df)
+
+# ###ZRI_list 출력
+# df = pd.DataFrame(ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'], 
+#                                 index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+# print(df)
 
 
-###new_ZRI_list 출력
-df = pd.DataFrame(new_ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
-print(df)
+# ###new_ZRI_list 출력
+# df = pd.DataFrame(new_ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'], 
+#                                 index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+# print(df)
 
 
 ###############################직선경로부하로 계산해서 문제상황 일어나는 경우 알고리즘###############
-
-
-#  ZRI값  
-# Z3   [6300]  []      []  [-99999]  [4000]  [5200]  [4400]  [5000]  [6000]  [-1500]  [-500]  [1500]----> Z10, Z11에서 복구 안됨
-# Z4   [6300]  []      []        []  [4000]  [5200]  [4400]  [5000]  [6000]  [-1500]  [-500]  [1500]----> Z10, Z11에서 복구 안됨
-# Z5   [6300]  []      []        []      []  [5200]  [4400]  [5000]  [6000]       []      []      []
-# Z6   [6300]  []      []        []      []      []  [4400]  [5000]  [6000]       []      []      []
-# Z7       []  []      []        []      []      []      []  [5000]  [6000]       []      []      []
-# Z8       []  []      []        []      []      []      []      []  [6000]       []      []      []
-# Z9       []  []      []        []      []      []      []      []      []       []      []      []
-# Z10      []  []      []        []      []      []      []      []      []       []  [-500]  [1500]---->  Z11에서 복구 안됨
-# Z11      []  []      []        []      []      []      []      []      []       []      []  [1500]
-# Z12      []  []      []        []      []      []      []      []      []       []      []      [] 
 
 
 FRK_list= []
@@ -210,7 +195,7 @@ for i in range(1 ,len(SP)+1) :
     FRK_list[i-1].append(intersection[0]) ###리스트에 값 입력
 
 ###FRK_list 출력. 연계피더의 분기점 리스트 생성
-df = pd.DataFrame({'각 연계피더의 분기점': FRK_list}, index=['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8'])
+df = pd.DataFrame({'각 연계피더의 분기점': FRK_list}, index=['F1', 'F2', 'F3', 'F4','F5'])
 print(df)
 
 
@@ -231,8 +216,8 @@ for i in range(len(Z)) :   # 각 고장점에 대해서 검사
                                 FRK_feeder_list[i][l] = "F"+ str(j+1)  ##리스트에 입력
         
 ### FRK_feeder_list 출력. 각 고장시에 연계피더의 분기점부하를 감당하고 있는 연계피더
-df = pd.DataFrame(FRK_feeder_list, columns =  ['F1','F2','F3','F4','F5','F6','F7','F8'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+df = pd.DataFrame(FRK_feeder_list, columns =  ['F1','F2','F3','F4','F5'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
 print(df)
 
 
@@ -247,21 +232,41 @@ for i in range(len(Z)) :
             FRK_fdm_list[i][j] =   mg[i][int(FRK_feeder_list[i][j].replace('F',''))-1]
 
 ### FRK_fdm_list 출력. 분기점을 감당하는 연계피더의 마진용량 리스트 생성
-df = pd.DataFrame(FRK_fdm_list, columns =  ['F1','F2','F3','F4','F5','F6','F7','F8'], 
-                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12'])
+df = pd.DataFrame(FRK_fdm_list, columns =  ['F1','F2','F3','F4','F5'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
 print(df)
 
 
 
 
-# ----------> mg[각 고장점][연계피더][0]해서 찾음 
+# ----------> 여유용량에서 부하 빼서 ZRI_list 다시 반환
 
 
 
+for k in range (len(dml)) :  # 굵은가지에서 나오는 잔가지 갯수만큼
+    for j in range (len(Z)) :  ## 고장점이 1부터 12까지
+        for i in range (len(globals()[dml[k]])) : # dml8의 부하 갯수 3개
+            if ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1 ] != [] : # 값이 존재할 때 
+               if FRK_fdm_list[j][int(dml[k].replace('dml',''))-1] != [] : ## 값이 존재할 때. int(dml[k].replace('dml',''))-1 ## dml8이면 7
+                if ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1][0] < 0 : #음수가 나오면
+                    if i  == 0 :
+                        ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1][0]  = FRK_fdm_list[j][int(dml[k].replace('dml',''))-1][0] - globals()[globals()[dml[k]][i]] # F8분기점의 여유용량에서 'Z10'빼고, 거기에서 Z11빼고, 거기에서 Z12빼고..
+                    if i  >= 1 :
+                        if  ZRI_list[j][int(globals()[dml[k]][i-1].replace('Z',''))-1 ][0]  - globals()[globals()[dml[k]][i]] >= 0 : 
+                            ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1 ][0]  = ZRI_list[j][int(globals()[dml[k]][i-1].replace('Z',''))-1 ][0]  - globals()[globals()[dml[k]][i]]
+
+
+###ZRI_list 출력
+df = pd.DataFrame(ZRI_list, columns = ['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
+print(df)
 
 
 
-
+### FRK_fdm_list 출력. 분기점을 감당하는 연계피더의 마진용량 리스트 생성
+df = pd.DataFrame(FRK_fdm_list, columns =  ['F1','F2','F3','F4','F5'], 
+                                index=['Z1','Z2','Z3','Z4','Z5','Z6','Z7','Z8','Z9','Z10','Z11','Z12','Z13','Z14','Z15','Z16','Z17','Z18','Z19','Z20','Z21'])
+print(df)
 
 
 #############################################################################################
