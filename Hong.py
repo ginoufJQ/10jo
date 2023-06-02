@@ -198,12 +198,29 @@ positions = [find_position(jh, Z, target) for target in Z]
 
 print(positions)
 
+def find_position(jh, SF, target):      #F1, F2.....Fn의 좌표값을 찾아줌 
+    for sublist in jh:
+        for item in sublist:
+            if item[4] == target:
+                return item[:2]
+    return None
+
+F_positions = [find_position(jh, SF, target) for target in SF]
+
+print(F_positions)
+
 
 y_coords = [position[0] for position in positions]    #Z의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
 x_coords = [position[1] for position in positions]    #Z의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
 
-print("x =", x_coords)
-print("y =", y_coords)
+print("Z_x =", x_coords)
+print("Z_y =", y_coords)
+
+y_F = [position[0] for position in F_positions]    #F의 x좌표값 ->좌표축으로 들어갈 때는 이게 y
+x_F = [position[1] for position in F_positions]    #F의 y좌표값 ->좌표축으로 들어갈 때는 이게 x 
+
+print("F_x =", x_F)
+print("F_y =", y_F)
 
 
 
