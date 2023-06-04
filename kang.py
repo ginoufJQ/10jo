@@ -132,6 +132,7 @@ for n in range(len(ZRI_list)):
 #####################################################선로증설
 
 mg = [[[] for x in range(len(SP))] for y in range(len(Z))]
+flow = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in range(len(Z))]
 # mg = []
 
 for e in range(1, len(Z)+1):
@@ -140,6 +141,7 @@ for e in range(1, len(Z)+1):
          for h in new_L[e-1][k-1][g-1]:
             if h in ZRI_list[e-1][g-1]:
                 mg[e-1][k-1].append(h)
+                flow[e-1][k-1][g-1].append(h)
             else :
                pass
 
@@ -173,6 +175,8 @@ for p in range(1, len(Z)+1):
      
 # mg_value  연계피더 값
 # UR_L_value 복구불가능지점 부하량
+
+
 for b1 in range(1, len(Z)+1):  #고장점 1~12에서 고장날 때
     for f1 in range(1,len(SP)+1) : 
       mg_value = mg[b1-1][f1-1] #연계피더 1~8 값 중 하나 선택
@@ -189,7 +193,6 @@ for b1 in range(1, len(Z)+1):  #고장점 1~12에서 고장날 때
           else:
             new_ZRI_list[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1][0])      
             new_ZRI_list2[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1][0])   
-          
 
 
 """ print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
@@ -325,21 +328,66 @@ for a in range(1, len(UR_ZRI_min_inf)+1):
 
 ######## 선로증설O ###############
 f3_2_list = [[[] for x in range(len(Z))] for y in range(len(Z))]
-for b in range(1, len(UR_ZRI_min_inf)+1):
-   for c in range(1, len(SP)+1):
-     for d in range(1, len(UR_ZRI_min_inf)+1):
-        f3_2_list[UR_ZRI_min_inf[b-1][0]-1][UR_ZRI_min_inf[d-1][1]-1].append(norm_new_ZRI_list[UR_ZRI_min_inf[b-1][0]-1][c-1][UR_ZRI_min_inf[d-1][1]-1][0])
+f3_2_list2 = [[[] for x in range(len(Z))] for y in range(len(Z))]
+f3_2_list3 = [[[] for x in range(len(Z))] for y in range(len(Z))]
 
+for d in range(1, len(UR_ZRI_min_inf)+1):
+    for c in range(1, len(SP)+1):
+        f3_2_list[UR_ZRI_min_inf[d-1][0]-1][UR_ZRI_min_inf[d-1][1]-1].append(norm_new_ZRI_list[UR_ZRI_min_inf[d-1][0]-1][c-1][UR_ZRI_min_inf[d-1][1]-1][0])
+
+for d in range(1, len(UR_ZRI_min_inf_list)+1):
+    for c in range(1, len(SP)+1):
+        f3_2_list2[UR_ZRI_min_inf_list[d-1][0]-1][UR_ZRI_min_inf_list[d-1][1]-1].append((c,norm_new_ZRI_list[UR_ZRI_min_inf_list[d-1][0]-1][c-1][UR_ZRI_min_inf_list[d-1][1]-1][0]))
+        f3_2_list3[UR_ZRI_min_inf_list[d-1][0]-1][UR_ZRI_min_inf_list[d-1][1]-1].append(norm_new_ZRI_list[UR_ZRI_min_inf_list[d-1][0]-1][c-1][UR_ZRI_min_inf_list[d-1][1]-1][0])
 
 for n in range(len(f3_2_list)):
   for m in range(len(f3_2_list[n])):
     if f3_2_list[n][m]:
       f3_2_list[n][m] = [max(f3_2_list[n][m])]
-      f3_2_list[n][m] = [max(f3_2_list[n][m])]
     else:
       f3_2_list[n][m] = []
-      f3_2_list[n][m] = []
 
+for n in range(1, len(Z)+1):
+  for m in range(1, len(Z)+1):
+      if f3_2_list3[n-1][m-1]:
+        f3_2_list3[n-1][m-1] = [max(f3_2_list3[n-1][m-1])]
+      else:
+        f3_2_list3[n-1][m-1] = []
+ 
+
+feeder_max = [[[] for x in range(len(Z))] for y in range(len(Z))] # 선로 증설하는데 선택된 연계피더 리스트 (고장점마다 취약구간에 대해서)
+feeder_max_inf = [[[] for x in range(len(Z))] for y in range(len(Z))] 
+new_flow = [] # 선로 증설 후 각 연계피더가 담당하는 부하
+
+for n in range(1, len(Z)+1):
+  for m in range(1, len(Z)+1):
+    for o in range(1, len(SP)+1):
+        if f3_2_list3[n-1][m-1]:
+            if f3_2_list3[n-1][m-1][0] == f3_2_list2[n-1][m-1][o-1][1]:
+                feeder_max[n-1][m-1].append(f3_2_list2[n-1][m-1][o-1][0]) # 선로 증설하는데 선택된 연계피더 리스트 (고장점마다 취약구간에 대해서)
+                feeder_max_inf[n-1][m-1].append((mg[n-1][o-1][0], f3_2_list2[n-1][m-1][o-1][0]))
+            else:
+                pass
+        else:
+            f3_2_list[n-1][m-1] = [] 
+
+new_flow = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in range(len(Z))] # # 뉴복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
+
+for i in range(1, len(Z)+1):
+  for j in range(1, len(SP)+1):
+     for k in range(1, len(Z)+1):
+          if flow[i-1][j-1][k-1] == []:
+             pass
+          else:
+             if flow[i-1][j-1][k-1] < [0] : 
+              new_flow[i-1][feeder_max_inf[i-1][k-1][0][1]-1][k-1].append(feeder_max_inf[i-1][k-1][0][0] - abs(flow[i-1][j-1][k-1][0]))
+             else:
+              new_flow[i-1][j-1][k-1].append(flow[i-1][j-1][k-1][0])
+           
+
+
+
+    
 f1_2 = 0
 f2_2 = 1
 for a in range(1, len(UR_ZRI_min_inf)+1):
@@ -355,11 +403,11 @@ for a in range(1, len(UR_ZRI_min_inf)+1):
 #####################################출력###############################
 
 """ print(*ZRI_list2, sep="\n")
-print("------------------") """
+print("------------------")
 print(*UR_ZRI_min_list, sep="\n")
-""" print("------------------")
+print("------------------")
 print(UR_ZRI_min)
-print("------------------") """
+print("------------------")
 
 print("--------------------")
 for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
@@ -368,13 +416,36 @@ for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list
    print() 
 
 print("--------------------")
-
-""" print(UR_ZRI_min_inf_list)
-print("------------------") """
+print(UR_ZRI_min_inf_list)
+print("------------------")
 
 print(UR_ZRI_min_inf)
 print("------------------")
 print(*f3_2_list,sep="\n")
 print("------------------")
 print(f3_2,)
-print("------------------")
+print("------------------")"""
+
+""" print(*f3_2_list, sep='\n')
+print("-------------------")
+print(*f3_2_list2, sep='\n')
+print("-------------------")
+print(*f3_2_list3, sep='\n') """
+
+print("-------------------")
+print(*feeder_max, sep='\n') # 선로 증설하는데 선택된 연계피더 리스트 (고장점마다 취약구간에 대해서) -> (연계피더)
+print("-------------------") 
+print(*feeder_max_inf, sep='\n') # 선로 증설하는데 선택된 연계피더 리스트 (고장점마다 취약구간에 대해서) -> (연계피더 용량, 연계피더)
+print("---------------------")
+
+for i0 in range(len(flow)):          # 구복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
+   for j0 in range(len(flow[i0])):
+      print(flow[i0][j0])
+   print()   
+
+print("---------------------")
+
+for i0 in range(len(new_flow)):     # 뉴복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
+   for j0 in range(len(new_flow[i0])):
+      print(new_flow[i0][j0])
+   print()   
