@@ -318,12 +318,24 @@ for item in UR_ZRI_min_inf_list:
 ######### 선로증설X ##########
 f1_1 = 0
 f2_1 = 0
-for a in range(1, len(UR_ZRI_min_inf)+1):
-    f3_1 = norm_ZRI_list[UR_ZRI_min_inf[a-1][0]][UR_ZRI_min_inf[a-1][1]][0]
+w1 = 0.3
+w2 = 0.8
+w3 = 0.4
 
-    def F1(w1, w2, w3):
-        return -(f1_1*w1) -(f2_1*w2) +(f3_1*w3)
+F1 = [[[] for x in range(len(Z))] for y in range(len(Z))] #선로증설안했을때목적함수
 
+for b in range(1, len(UR_ZRI_min_inf_list)+1):
+    f3_1 = norm_ZRI_list[UR_ZRI_min_inf_list[b-1][0]-1][UR_ZRI_min_inf_list[b-1][1]-1][0]
+    F1[UR_ZRI_min_inf_list[b-1][0]-1][UR_ZRI_min_inf_list[b-1][1]-1].append(-(f1_1*w1) -(f2_1*w2) +(f3_1*w3))
+
+""" def F1(w1, w2, w3):
+    return -(f1_1*w1) -(f2_1*w2) +(f3_1*w3) """
+
+""" print(*norm_ZRI_list, sep = "\n")
+print("------------------------")
+print(UR_ZRI_min_inf_list) """
+print("------------------------")
+print(*F1, sep="\n")
 
 
 ######## 선로증설O ###############
@@ -385,17 +397,35 @@ for i in range(1, len(Z)+1):
               new_flow[i-1][j-1][k-1].append(flow[i-1][j-1][k-1][0])
            
 
-
-
     
 f1_2 = 0
 f2_2 = 1
-for a in range(1, len(UR_ZRI_min_inf)+1):
-    f3_2 = f3_2_list[UR_ZRI_min_inf[a-1][0]][UR_ZRI_min_inf[a-1][1]]
+F2 = [[[] for x in range(len(Z))] for y in range(len(Z))] #선로증설했을때목적함수
 
-    def F2(w1, w2, w3):
-        return -(f1_2*w1) -(f2_2*w2) +(f3_2*w3)
 
+for b in range(1, len(UR_ZRI_min_inf_list)+1): 
+        f3_2 = norm_new_ZRI_list[UR_ZRI_min_inf_list[b-1][0]-1][feeder_max[UR_ZRI_min_inf_list[b-1][0]-1][UR_ZRI_min_inf_list[b-1][1]-1][0]-1][UR_ZRI_min_inf_list[b-1][1]-1][0]
+        F2[UR_ZRI_min_inf_list[b-1][0]-1][UR_ZRI_min_inf_list[b-1][1]-1].append((-f1_2*w1) -(f2_2*w2) +(f3_2*w3))
+
+print("-----------------")
+print(*F2, sep="\n")
+
+
+###########################최종 F 구하기####################
+F = [[[] for x in range(len(Z))] for y in range(len(Z))] #최종F, 선로증설여부
+
+for i in range (1, len(Z)+1):
+   for j in range (1, len(Z)+1):
+      if F1[i-1][j-1] == F2[i-1][j-1]:
+         pass
+      else:
+        if F1[i-1][j-1] > F2[i-1][j-1]:
+            F[i-1][j-1].append(("선로증설안함", F1[i-1][j-1][0]))
+        else:
+            F[i-1][j-1].append(("선로증설함", F2[i-1][j-1][0]))
+
+print("-----------------")
+print(*F, sep="\n")
 
 
 
@@ -407,7 +437,7 @@ print("------------------")
 print(*UR_ZRI_min_list, sep="\n")
 print("------------------")
 print(UR_ZRI_min)
-print("------------------")
+print("------------------") 
 
 print("--------------------")
 for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
@@ -430,7 +460,7 @@ print("------------------")"""
 print("-------------------")
 print(*f3_2_list2, sep='\n')
 print("-------------------")
-print(*f3_2_list3, sep='\n') """
+print(*f3_2_list3, sep='\n') 
 
 print("-------------------")
 print(*feeder_max, sep='\n') # 선로 증설하는데 선택된 연계피더 리스트 (고장점마다 취약구간에 대해서) -> (연계피더)
@@ -448,4 +478,4 @@ print("---------------------")
 for i0 in range(len(new_flow)):     # 뉴복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
    for j0 in range(len(new_flow[i0])):
       print(new_flow[i0][j0])
-   print()   
+   print()   """
