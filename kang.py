@@ -1,16 +1,15 @@
 import pandas as pd
 
-
 sum = 0
 FP = 0
 FRK = 0
 
 
-#용량 입력
-Z = [500,500,5000,700,1200,1100,5600,1000,500,900,700,800] # Z3=1000 값을 Z3=5000으로 바꿔서 해봄 #Z7=600 값을 Z7=5600으로 바꿈
+Z = [10,20,30,40,50,60,70,10,20,30,40,50,60,70,10,20,30,40,50,60,70]
 del sum
-FTL = [7200,9600,9600,7500,7900,10000,9000,9500]
+FTL = [14000,10000,9000,8000,7000] ### F1 말단이라 여유용량 0
 FM = 14000
+
 
 for i in range(1, len(Z)+1): 
     globals()["Z{}".format(i)]=Z[i-1]
@@ -24,19 +23,28 @@ for i in range(1,len(FTL)+1):
 for i in range(1,len(FTL)+1):
     globals()["F{}".format(i)]=FM-FTL[i-1]
     
-# F1~F8[6800,4400,4400,6500,6100,4000,5000,4500]
 
 
-#직선경로. 일반화가 필요함!!!!!!!!!!!!!!!!!!!!!!!
-L = ["L1","L2","L3","L4","L5","L6","L7","L8"]
-L1 = ["F1","Z1","Z6", "Z5","Z4","Z3","Z2","F"]   
-L2 = ["F2","Z6", "Z5","Z4","Z3","Z2","F"] 
-L3 = ["F3","Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]     
-L4 = ["F4","Z9", "Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]  
-L5 = ["F5","Z9", "Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]   
-L6 = ["F6","Z9", "Z8","Z7","Z6", "Z5","Z4","Z3","Z2","F"]  
-L7 = ["F7","Z11","Z10","Z4","Z3","Z2","F"]  
-L8 = ["F8","Z12", "Z11","Z10","Z4","Z3","Z2","F"]  
+
+#직선경로. 일반화가 필요없음
+L = ["Z6","Z7","Z8","Z9","Z10","Z11","Z12","Z13"] ##새로 추가함. 메인피더에 직선으로 달린 부하들
+L0 = ["L1","L2","L3","L4"] ##L0로 수정함
+L1 = ["F1","Z1","Z2", "Z3","Z5", "Z12","Z11","Z10","Z9","Z8","Z7","Z6","F"]  
+L2 = ["F2","Z4","Z10", "Z9","Z8","Z7","Z6","F"]   
+L3 = ["F3","Z13", "Z12","Z11","Z10","Z9","Z8","Z7","Z6","F"] 
+L4 = ["F4","Z18","Z16","Z14", "Z8","Z7","Z6","F"]     
+L5 = ["F5","Z21", "Z20","Z19","Z17", "Z15", "Z13","Z12","Z11","Z10","Z9","Z8","Z7","Z6","F"]  
+
+
+
+
+dml = ['dml1', 'dml2','dml4', 'dml5']
+
+## 직선경로부하로 인한 오류에 쓰임. 굵은가지랑 가까운 쪽부터 부하값 써야함. 반대로 안되게 주의!!!
+dml1 = ["Z5","Z3","Z2","Z1"]
+dml2 = ['Z4']  
+dml4 = ['Z14', 'Z16', 'Z18']  
+dml5 = ['Z15', 'Z17', 'Z19','Z20','Z21']  
 
 
 
@@ -45,9 +53,9 @@ L8 = ["F8","Z12", "Z11","Z10","Z4","Z3","Z2","F"]
 #Main피더
 MP = "F" 
 #연계피더
-SP = ["F1","F2","F3","F4","F5","F6","F7","F8"] 
+SP = ["F1","F2","F3","F4","F5"] 
 #분기점
-FRK = ["Z3"] 
+FRK = [] 
 #고장점
 FP
 
@@ -127,6 +135,93 @@ for n in range(len(ZRI_list)):
 
 #print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 #print(*new_L, sep='\n')
+
+mg = [[[] for x in range(len(SP))] for y in range(len(Z))]
+
+
+for e in range(1, len(Z)+1):
+   for k in range(1, len(SP)+1):
+      for g in range(1, len(Z)+1):
+         for h in new_L[e-1][k-1][g-1]:
+            if h in ZRI_list[e-1][g-1]:
+                mg[e-1][k-1].append(h)       ### 피더K의 여유용량을 mg리스트에 넣음 
+            else :
+               pass
+
+for len1 in range(1,len(mg)+1):      ### Z1~Z12에서 고장났을때가 행
+  for len2 in range(1, len(mg[len1-1])+1):      ### Z1~Z12의 고복지가 열
+    if mg[len1-1][len2-1]: 
+      mg[len1-1][len2-1] = [min(mg[len1-1][len2-1])]     ### 연계되는 피더의 여유용량
+    else:
+      mg[len1-1][len2-1] = [globals()['F' + str(len2)]]       ### 연계안되는 피더의 여유용량
+
+
+FRK_list= []
+for N in range( len(SP) ):
+        FRK_list.append([])
+
+for i in range(1 ,len(SP)+1) :
+    intersection = [x for x in globals()['L' + str(i)] if x in L]  # L이랑 L1~L8 안의 값을 차례대로 비교를 할껀데, 가장 먼저 겹치는 게 F1~F8의 분기점임!!!! 
+    FRK_list[i-1].append(intersection[0]) ###리스트에 값 입력
+
+###FRK_list 출력. 연계피더의 분기점 리스트 생성
+df = pd.DataFrame({'각 연계피더의 분기점': FRK_list}, index=['F1', 'F2', 'F3', 'F4','F5'])
+print(df)
+
+
+
+
+#####각 분기점의 부하를 감당하는 피더를 찾는다 
+#-----------> ZRI_list[각 고장점][분기점]에서 분기점의 고장복구지수를 찾고,
+# ----------->  new_L[각 고장점][연계피더][분기점]에서 어떤 피더가 감당하는지 찾음  
+# -----------> FRK_list[연계피더][0]는 연계피더의 분기점
+FRK_feeder_list=  [[[] for x in range(len(SP))] for y in range(len(Z))]
+
+for i in range(len(Z)) :   # 각 고장점에 대해서 검사
+    for l in range(len(SP)) :  # 각 연계피더의 분기점에 대해서 검사. 연계피더 F1의 분기점,F2의 분기점.... F8까지 검사
+        for k in (   (int(FRK_list[l][0].replace('Z','')))-1,  (int(FRK_list[l][0].replace('Z','')))-1 ) : # 분기점 위치
+            for j in range(len(SP)) :       # 어떤 연계피더가 공급하는지 모두 검사
+                    if ZRI_list[i][k] == new_L[i][j][k] :  
+                         if ZRI_list[i][k] != []:
+                                FRK_feeder_list[i][l] = "F"+ str(j+1)  ##리스트에 입력
+        
+### FRK_feeder_list 출력. 각 고장시에 연계피더의 분기점부하를 감당하고 있는 연계피더
+
+
+
+
+
+
+FRK_fdm_list=  [[[] for x in range(len(SP))] for y in range(len(Z))]
+
+for i in range(len(Z)) :
+    for j in range(len(SP)) :
+        if FRK_feeder_list[i][j] != []:
+            FRK_fdm_list[i][j] =   mg[i][int(FRK_feeder_list[i][j].replace('F',''))-1]
+
+### FRK_fdm_list 출력. 분기점을 감당하는 연계피더의 마진용량 리스트 생성
+
+
+
+
+# ----------> 여유용량에서 부하 빼서 ZRI_list 다시 반환
+
+
+
+for k in range (len(dml)) :  # 굵은가지에서 나오는 잔가지 갯수만큼
+    for j in range (len(Z)) :  ## 고장점이 1부터 12까지
+        for i in range (len(globals()[dml[k]])) : # dml8의 부하 갯수 3개
+            if ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1 ] != [] : # 값이 존재할 때 
+               if FRK_fdm_list[j][int(dml[k].replace('dml',''))-1] != [] : ## 값이 존재할 때. int(dml[k].replace('dml',''))-1 ## dml8이면 7
+                if ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1][0] < 0 : #음수가 나오면
+                    if i  == 0 :
+                        ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1][0]  = FRK_fdm_list[j][int(dml[k].replace('dml',''))-1][0] - globals()[globals()[dml[k]][i]] # F8분기점의 여유용량에서 'Z10'빼고, 거기에서 Z11빼고, 거기에서 Z12빼고..
+                    if i  >= 1 :
+                        if  ZRI_list[j][int(globals()[dml[k]][i-1].replace('Z',''))-1 ][0]  - globals()[globals()[dml[k]][i]] >= 0 : 
+                            ZRI_list[j][int(globals()[dml[k]][i].replace('Z',''))-1 ][0]  = ZRI_list[j][int(globals()[dml[k]][i-1].replace('Z',''))-1 ][0]  - globals()[globals()[dml[k]][i]]
+
+
+
 
 
 #####################################################선로증설
@@ -359,7 +454,7 @@ for n in range(1, len(Z)+1):
         f3_2_list3[n-1][m-1] = []
  
 
-feeder_max = [[] for x in range(len(Z))]  # 선로 증설하는데 선택된 연계피더 리스트 (고장점마다 취약구간에 대해서)
+feeder_max = [[] for x in range(len(Z))]  # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서)
 feeder_max_inf = [[] for x in range(len(Z))] 
 feeder_max_inf_2 = [[[] for x in range(len(Z))] for y in range(len(Z))] 
 new_flow = [] # 선로 증설 후 각 연계피더가 담당하는 부하
@@ -417,6 +512,7 @@ for b in range(1, len(UR_ZRI_min_inf)+1):
 ###########################최종 F 구하기####################
 F = [[] for x in range(len(Z))] #최종F, 선로증설여부
 
+
 for i in range (1, len(Z)+1):
       if F1[i-1] == F2[i-1]:
          pass
@@ -424,7 +520,7 @@ for i in range (1, len(Z)+1):
         if F1[i-1] > F2[i-1]:
             F[i-1].append(("선로증설안함", F1[i-1][0]))
         else:
-            F[i-1].append(("선로증설함", F2[i-1][0]))
+            F[i-1].append(("선로증설함", F2[i-1][0], feeder_max[i-1][0]))
 
 
 
@@ -470,9 +566,9 @@ for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list
  """
 
 print("-------------------")
-print(*feeder_max, sep='\n') # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더)
+print(feeder_max) # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더)
 print("-------------------") 
-print(*feeder_max_inf, sep='\n') # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더 용량, 연계피더)
+print(feeder_max_inf) # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더 용량, 연계피더)
 print("---------------------")
 
 for i0 in range(len(flow)):          # 구복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
