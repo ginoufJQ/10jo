@@ -130,6 +130,7 @@ for i in range(23):
 
 
 
+
 sum = 0
 FP = 0
 FRK = 0
@@ -920,9 +921,10 @@ for i in range(len(x_sub_F)):     # F랑 Z 좌표 비교해서 ㄴ ㄱ ┌  ┛ 
                 lines_to_hide.extend([line1, line2])
 
     elif x_Z_trouble[i] >= x_sub_F[i] and y_Z_trouble[i] <= y_sub_F[i]:
-                line1 = plt.hlines(y_sub_F[i], x_sub_F[i], x_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
-                line2 = plt.vlines(x_Z_trouble[i], y_Z_trouble[i], y_sub_F[i], color='red', linestyles='solid', linewidth=0.5)
-                lines_to_hide.extend([line1, line2])
+                line1 = plt.hlines(y_Z_trouble[i], (x_sub_F[i]+x_Z_trouble[i])/2, x_Z_trouble[i], color='red', linestyles='solid', linewidth=0.5)
+                line2 = plt.vlines((x_sub_F[i]+x_Z_trouble[i])/2, y_Z_trouble[i], y_sub_F[i], color='red', linestyles='solid', linewidth=0.5)
+                line3 = plt.hlines(y_sub_F[i], x_sub_F[i], (x_sub_F[i]+x_Z_trouble[i])/2, color='red', linestyles='solid', linewidth=0.5)
+                lines_to_hide.extend([line1, line2, line3])
              
 
 # 그래프 숨기기
