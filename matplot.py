@@ -981,7 +981,7 @@ for i in range(len(jh)): #jh 리스트 행 길이만큼 반복
                         ax.text(j-0.75, i+0.3, 'F', fontsize='7', color='black', alpha=1)
                         
 
-                elif jh[i][j][2] == fd : #연계피더 생성 
+                elif jh[i][j][2] == fd and jh[i][j][3] != 0: #연계피더 생성 
                         rect = plt.Rectangle((j-0.25,i-0.2), 0.5, 0.5, facecolor='none', edgecolor='black', linewidth=0.5)
                         ax.add_patch(rect)
                         ax.text(j+0.4, i+0.3, jh[i][j][4], fontsize='7', color='black', alpha=1)
