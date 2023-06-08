@@ -166,9 +166,6 @@ for i in range(1 ,len(SP)+1) :
     FRK_list[i-1].append(intersection[0]) ###리스트에 값 입력
 
 ###FRK_list 출력. 연계피더의 분기점 리스트 생성
-df = pd.DataFrame({'각 연계피더의 분기점': FRK_list}, index=['F1', 'F2', 'F3', 'F4','F5'])
-print(df)
-
 
 
 
@@ -225,7 +222,7 @@ for k in range (len(dml)) :  # 굵은가지에서 나오는 잔가지 갯수만�
 
 
 
-#####################################################선로증설
+#####################################################선로증설############################################
 
 
 flow = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in range(len(Z))]
@@ -267,7 +264,8 @@ for p in range(1, len(Z)+1):
           pass
      else:
         pass
-     
+
+    
 
      
 # mg_value  연계피더 값
@@ -387,7 +385,7 @@ for b in range(1, len(UR_ZRI_min_inf)+1):
 
 
 
-######## 선로증설O ###############
+################ 선로증설O ########################
 f3_2_list = [[[] for x in range(len(Z))] for y in range(len(Z))]
 f3_2_list2 = [[[] for x in range(len(Z))] for y in range(len(Z))]
 f3_2_list3 = [[[] for x in range(len(Z))] for y in range(len(Z))]
@@ -490,13 +488,14 @@ for i in range (1, len(Z)+1):
 #####################################출력###############################
 
 
-""" print("-------------------")
+print("-------------------")
 print(feeder_max) # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더)
-print("-------------------") 
+
+"""print("-------------------") 
 print(feeder_max_inf) # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더 용량, 연계피더)
 print("---------------------") """
 
-for i0 in range(len(flow)):          # 구복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
+""" for i0 in range(len(flow)):          # 구복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
    for j0 in range(len(flow[i0])):
       print(flow[i0][j0])
    print()   
@@ -508,7 +507,7 @@ for i0 in range(len(new_flow)):     # 뉴복지에서 각 연계피더가 담당
       print(new_flow[i0][j0])
    print()  
 
-""" print("------------------------------")
+print("------------------------------")
 print(F1) # 선로증설안했을때 취약구간에 대한 목적함수
 
 print("------------------------------")
@@ -516,5 +515,6 @@ print(F2) # 선로증설했을때 취약구간에 대한 목적함수
 
 
 print("------------------------------")
-print(F) # 최종 취약구간에 대한 목적함수
+print(F) # 최종 취약구간에 대한 목적함수 """
+""" print(*UR_ZRI_min_inf, sep="\n")
  """
