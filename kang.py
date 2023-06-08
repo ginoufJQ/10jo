@@ -5,9 +5,9 @@ FP = 0
 FRK = 0
 
 
-Z = [10,20,30,40,50,60,70,10,20,30,40,50,60,70,10,20,30,40,50,60,70]
+Z = [100,200,300,400,500,600,700,100,200,300,400,500,600,700,100,200,300,400,500,600,700]
 del sum
-FTL = [14000,10000,9000,8000,7000] ### F1 말단이라 여유용량 0
+FTL = [14000, 10000,9000,8000,7000] ### F1 말단이라 여유용량 0
 FM = 14000
 
 
@@ -82,6 +82,7 @@ new_L = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in
 
 
 ########################################################################
+
 for b in range(1, len(Z)+1):   ###고장점 Z1~Z6 6개 지점
     FP = "Z{}".format(b) 
 
@@ -226,7 +227,7 @@ for k in range (len(dml)) :  # 굵은가지에서 나오는 잔가지 갯수만�
 
 #####################################################선로증설
 
-mg = [[[] for x in range(len(SP))] for y in range(len(Z))]
+
 flow = [[[ [] for col in range(len(Z))] for row in range(len(SP))] for depth in range(len(Z))]
 # mg = []
 
@@ -246,6 +247,7 @@ for len1 in range(1,len(mg)+1):
       mg[len1-1][len2-1] = [min(mg[len1-1][len2-1])]
     else:
       mg[len1-1][len2-1] = [globals()['F' + str(len2)]]
+
 
 UR_ZRI = [] # 복구불가능지점의 ZRI의 값
 UR_L = [[ [] for col2 in range(len(Z))] for row2 in range(len(Z))] # 복구불가능지점 부하량
@@ -290,27 +292,6 @@ for b1 in range(1, len(Z)+1):  #고장점 1~12에서 고장날 때
             new_ZRI_list2[b1-1][f1-1][l1-1].append(ZRI_list[b1-1][l1-1][0])   
 
 
-""" print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*mg, sep='\n')
-
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-print(*UR_L, sep='\n')
-
-print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-
-for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력,,
-   for j0 in range(len(new_ZRI_list[i0])):
-      print(new_ZRI_list[i0][j0])
-   print() 
-
-print("---------------------")
-
-for i0 in range(len(new_ZRI_list2)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력,,
-   for j0 in range(len(new_ZRI_list2[i0])):
-      print(new_ZRI_list2[i0][j0])
-   print()       """
-
-
 
 
 ##############################################정규화(f3)#############################
@@ -351,25 +332,6 @@ for p2 in range(1, len(Z)+1):
 
 
 
-#########결과값 출력############
-""" print("--------------------")
-print(*ZRI_list, sep='\n') #고복지 값
-
-print("--------------------")
-print(*norm_ZRI_list, sep='\n') #고복지 정규화 값
-
-print("--------------------")
-for i0 in range(len(new_ZRI_list)): #3차원 리스트인 new_ZRI_list 줄바꿔서 출력
-   for j0 in range(len(new_ZRI_list[i0])):
-      print(new_ZRI_list[i0][j0])
-   print()
-
-
-print("--------------------")
-for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
-   for j0 in range(len(norm_new_ZRI_list[i0])):
-      print(norm_new_ZRI_list[i0][j0])
-   print()  """
 
 ################################# 목적함수F ####################################
 
@@ -527,49 +489,12 @@ for i in range (1, len(Z)+1):
 
 #####################################출력###############################
 
-""" print(*ZRI_list2, sep="\n")
-print("------------------")
-print(*UR_ZRI_min_list, sep="\n")
-print("------------------")
-print(UR_ZRI_min)
-print("------------------") 
 
-print("--------------------")
-for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
-   for j0 in range(len(norm_new_ZRI_list[i0])):
-      print(norm_new_ZRI_list[i0][j0])
-   print() 
-
-print("--------------------")
-print(UR_ZRI_min_inf_list)
-print("------------------")
-
-print(UR_ZRI_min_inf)
-print("------------------")
-print(*f3_2_list,sep="\n")
-print("------------------")
-print(f3_2,)
-print("------------------")"""
-
-""" print(*f3_2_list, sep='\n')
-print("-------------------")
-print(*f3_2_list2, sep='\n')
-print("-------------------")
-print(*f3_2_list3, sep='\n')""" 
-""" 
-print(*norm_ZRI_list, sep="\n")
-print("-------------------")
-for i0 in range(len(norm_new_ZRI_list)): #3차원 리스트인 norm_new_ZRI_list 줄바꿔서 출력 (정규화)
-   for j0 in range(len(norm_new_ZRI_list[i0])):
-      print(norm_new_ZRI_list[i0][j0])
-   print() 
- """
-
-print("-------------------")
+""" print("-------------------")
 print(feeder_max) # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더)
 print("-------------------") 
 print(feeder_max_inf) # 선로 증설하는데 선택된 연계피더 리스트 (취약구간에 대해서) -> (연계피더 용량, 연계피더)
-print("---------------------")
+print("---------------------") """
 
 for i0 in range(len(flow)):          # 구복지에서 각 연계피더가 담당하는 부하 (고장점마다 연계피더가 담당하는 부하량)
    for j0 in range(len(flow[i0])):
@@ -583,7 +508,7 @@ for i0 in range(len(new_flow)):     # 뉴복지에서 각 연계피더가 담당
       print(new_flow[i0][j0])
    print()  
 
-print("------------------------------")
+""" print("------------------------------")
 print(F1) # 선로증설안했을때 취약구간에 대한 목적함수
 
 print("------------------------------")
@@ -592,3 +517,4 @@ print(F2) # 선로증설했을때 취약구간에 대한 목적함수
 
 print("------------------------------")
 print(F) # 최종 취약구간에 대한 목적함수
+ """
