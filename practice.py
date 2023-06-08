@@ -77,14 +77,14 @@ def Load(i):
     return "Z"+str(i)
 
 SF = []
-Z = []
+ZZ = []
 FRK = []
 
 for i in range(1,n1+1):
     SF.append(F(i))
 
 for i in range(1, n2+1):
-    Z.append(Load(i))
+    ZZ.append(Load(i))
 
 
 ########################## 배열의 각 5번째 원소에 태그 할당하기
@@ -99,7 +99,7 @@ for i in range(23):
 for i in range(23):
     for j in range(21):
         if ((seobang_bus_list[i][j][2] == hline or seobang_bus_list[i][j][2] == vline) and seobang_bus_list[i][j][3] != 0) or seobang_bus_list[i][j][2] == frk1 or seobang_bus_list[i][j][2] == frk2:    # 종류가 선로이면서 용량이 0이 아니거나 / 분기점일때 부하로 본다
-            seobang_bus_list[i][j][4] = Z[b]                                                                                                                                                             # 부하일때 Z1, Z2,,, 태그 할당
+            seobang_bus_list[i][j][4] = ZZ[b]                                                                                                                                                             # 부하일때 Z1, Z2,,, 태그 할당
             b += 1
 
 for i in range(23):
